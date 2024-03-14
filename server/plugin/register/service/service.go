@@ -11,7 +11,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	uuid "github.com/gofrs/uuid/v5"
 	"github.com/mojocn/base64Captcha"
-	"gopkg.in/telebot.v3"
+	// "gopkg.in/telebot.v3"
 )
 
 type RegisterService struct{}
@@ -44,14 +44,12 @@ func (e *RegisterService) PlugService(req model.Request) (res *system.SysUser, e
 	sysAuthority.Password = u.Password
 	sysAuthority.AuthorityId = plugGlobal.GlobalConfig.AuthorityId
 	sysAuthority.AuthorityIds = append(sysAuthority.AuthorityIds, plugGlobal.GlobalConfig.AuthorityId)
-
 	// 因为上面定义过，且得到了数据库默认的值，所以直接使用
 	user.Password = u.Password
 	user.UUID, _ = uuid.NewV4()
 	user.Username = u.Username
 	user.NickName = u.Username
 	user.AuthorityId = plugGlobal.GlobalConfig.AuthorityId
-
 	for _, v := range sysAuthority.AuthorityIds {
 		user.Authorities = append(user.Authorities, system.SysAuthority{
 			AuthorityId: v,
@@ -59,7 +57,6 @@ func (e *RegisterService) PlugService(req model.Request) (res *system.SysUser, e
 			DefaultRouter: "dashboard", 
 		})
 	}
-
 	if rest, err := us.Register(*u); err != nil {
 		return &rest, errors.New("注册失败!")
 	}
