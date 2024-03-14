@@ -2,6 +2,8 @@
 
 拖拽插件压缩包进入插件安装页面进行安装再进行后续操作
 
+由于有TG发信和获取频道用户信息的需求，所以需要事先安装GVA插件市场中的```灰机消息发送插件```
+
 ## 具体说明
 
 ### server
@@ -16,8 +18,10 @@ func InstallPlugin
 
 ```
   // 8881 为普通子用户ID，可自行更改替换注册的角色
-  PluginInit(PublicGroup, register.CreateRegisterPlug("8881"))
+  PluginInit(PublicGroup, register.CreateRegisterPlug("8881"), "tgbot的token", "验证码的长度", "频道的chat_id")
 ```
+
+这里的tgbot务必已加入到频道中并给予了管理员权限
 
 ### web
 
@@ -32,63 +36,6 @@ const whiteList = ['Admin', 'Login', 'Init', 'Register']
 添加对应的路由名字
 
 #### 2
-
-查看 ```web/src/modules/user.js``` 并参照
-
-```
-  const Register = async (loginInfo) => {
-    loadingInstance.value = ElLoading.service({
-        fullscreen: true,
-        text: "注册中，请稍候...",
-    });
-    try {
-        const res = await userRegister(loginInfo);
-        if (res.code === 0) {
-            setUserInfo(res.data.user);
-            setToken(res.data.token);
-            const routerStore = useRouterStore();
-            await routerStore.SetAsyncRouter();
-            const asyncRouters = routerStore.asyncRouters;
-            asyncRouters.forEach((asyncRouter) => {
-                router.addRoute(asyncRouter);
-            });
-            router.push({name: userInfo.value.authority.defaultRouter});
-            return true;
-        }
-    } catch (e) {
-        loadingInstance.value.close();
-    }
-    loadingInstance.value.close();
-  };
-
-  return {
-    Register,
-    // 后续有若干原有配置的内容
-  }
-```
-
-在对应位置添加上述内容，注意return只是多添加了一个返回，不是写多一个return
-
-#### 3
-
-查看 ```web/src/api/user.js``` 在文件最后添加
-
-```
-// web/src/api/user.js
-// @Summary 用户注册
-// @Produce  application/json
-// @Param data body {username:"string",password:"string"}
-// @Router /register [post]
-export const userRegister = (data) => {
-  return service({
-    url: '/register',
-    method: 'post',
-    data: data,
-  })
-}
-```
-
-#### 4
 
 查看 ```web/src/router/index.js``` 参照
 
@@ -127,7 +74,7 @@ const routes = [{
 ]
 ```
 
-进行更改，确保用户进入的首页是插件中定义的首页，而不是官方GVA定义的登录页
+进行更改，定义用户进入的首页是插件中定义的首页，而不是官方GVA定义的初始化页面
 
 ## 后言
 

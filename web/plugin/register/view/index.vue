@@ -54,11 +54,11 @@
 <script setup>
 import { captcha } from '@/api/user'
 import { checkDB } from '@/api/initdb'
-// import BottomInfo from '@/view/layout/bottomInfo/bottomInfo.vue'
 import { reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/pinia/modules/user'
+// 调用扩展后的useUserStore而不是使用原始的useUserStore以加载注册函数
+import { extendedUseUserStore } from '@/plugin/register/pinia/modules/user'
 
 const router = useRouter()
 // 验证函数
@@ -76,7 +76,6 @@ const checkPassword = (rule, value, callback) => {
     callback()
   }
 }
-
 // 获取验证码
 const loginVerify = () => {
   captcha({}).then((ele) => {
@@ -87,13 +86,11 @@ const loginVerify = () => {
   })
 }
 loginVerify()
-
 // 登录相关操作
 const lock = ref('lock')
 const changeLock = () => {
   lock.value = lock.value === 'lock' ? 'unlock' : 'lock'
 }
-
 const loginForm = ref(null)
 const picPath = ref('')
 const loginFormData = reactive({
@@ -116,8 +113,7 @@ const rules = reactive({
     },
   ],
 })
-
-const userStore = useUserStore()
+const userStore = extendedUseUserStore()
 const login = async () => {
   return await userStore.LoginIn(loginFormData)
 }

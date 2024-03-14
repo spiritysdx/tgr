@@ -12,6 +12,7 @@ func (s *RegisterRouter) InitRegisterRouter(Router *gin.RouterGroup) {
 	plugRouter := Router
 	plugApi := api.ApiGroupApp.RegisterApi
 	{
-		plugRouter.POST("", plugApi.ApiName)
+		plugRouter.POST("code", plugApi.Code)
+		plugRouter.POST("register", plugApi.Register)
 	}
 }

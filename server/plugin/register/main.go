@@ -9,8 +9,11 @@ import (
 type RegisterPlugin struct {
 }
 
-func CreateRegisterPlug(AuthorityId uint) *RegisterPlugin {
+func CreateRegisterPlug(AuthorityId uint, TgBotToken string, CodeLength int, ChannelId string) *RegisterPlugin {
 	global.GlobalConfig.AuthorityId = AuthorityId
+	global.GlobalConfig.TgBotToken = TgBotToken
+	global.GlobalConfig.CodeLength = CodeLength
+	global.GlobalConfig.ChannelId = ChannelId
 	return &RegisterPlugin{}
 }
 
