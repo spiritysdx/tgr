@@ -15,8 +15,8 @@ func InstallPlugin
 函数中插入
 
 ```
-    // 8881 为普通子用户ID，可自行更改替换注册的角色
-    PluginInit(PublicGroup, register.CreateRegisterPlug("8881"))
+  // 8881 为普通子用户ID，可自行更改替换注册的角色
+  PluginInit(PublicGroup, register.CreateRegisterPlug("8881"))
 ```
 
 ### web

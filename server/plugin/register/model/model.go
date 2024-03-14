@@ -7,10 +7,11 @@ import (
 )
 
 type Request struct {
-	Username  string `json:"username"`  // 用户名
-	Password  string `json:"password"`  // 密码
-	Captcha   string `json:"captcha"`   // 验证码
-	CaptchaId string `json:"captchaId"` // 验证码ID
+	Username   string `json:"username"`   // 用户名
+	Password   string `json:"password"`   // 密码
+	// Verifycode string `json:"verifycode"` // TG的验证码
+	Captcha    string `json:"captcha"`    // 验证码
+	CaptchaId  string `json:"captchaId"`  // 验证码ID
 }
 
 type Response struct {

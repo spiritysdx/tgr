@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	systemReq "github.com/flipped-aurora/gin-vue-admin/server/model/system/request"
@@ -12,13 +11,14 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	uuid "github.com/gofrs/uuid/v5"
 	"github.com/mojocn/base64Captcha"
+	"gopkg.in/telebot.v3"
 )
 
 type RegisterService struct{}
 
+// , "这里填写TGBot的Token", "这里填写频道的chat_id"
 func (e *RegisterService) PlugService(req model.Request) (res *system.SysUser, err error) {
 	if err := utils.Verify(req, utils.LoginVerify); err != nil {
-		// TODO resopne need
 		return res, err
 	}
 	var (
@@ -29,7 +29,8 @@ func (e *RegisterService) PlugService(req model.Request) (res *system.SysUser, e
 	if !store.Verify(req.CaptchaId, req.Captcha, true) {
 		return res, errors.New("验证码错误")
 	}
-	u := &system.SysUser{Username: req.Username, Password: req.Password}
+	// Verifycode: req.Verifycode
+	u := &system.SysUser{ Username: req.Username, Password: req.Password }
 	err = global.GVA_DB.Where("username = ?", u.Username).Preload("Authorities").Preload("Authority").First(&user).Error
 	if err == nil {
 		return res, errors.New("用户名已注册")
@@ -37,14 +38,13 @@ func (e *RegisterService) PlugService(req model.Request) (res *system.SysUser, e
 	if user.Username != "" && user.Password != "" {
 		return res, errors.New("用户名已注册")
 	}
-
 	var sysAuthority systemReq.Register
 	sysAuthority.Username = u.Username
 	sysAuthority.NickName = u.NickName
 	sysAuthority.Password = u.Password
-	// TODO 角色ID
 	sysAuthority.AuthorityId = plugGlobal.GlobalConfig.AuthorityId
 	sysAuthority.AuthorityIds = append(sysAuthority.AuthorityIds, plugGlobal.GlobalConfig.AuthorityId)
+
 	// 因为上面定义过，且得到了数据库默认的值，所以直接使用
 	user.Password = u.Password
 	user.UUID, _ = uuid.NewV4()
@@ -55,7 +55,8 @@ func (e *RegisterService) PlugService(req model.Request) (res *system.SysUser, e
 	for _, v := range sysAuthority.AuthorityIds {
 		user.Authorities = append(user.Authorities, system.SysAuthority{
 			AuthorityId: v,
-			//DefaultRouter: "dashboard", //TODO 疑问，系统注册的时候有这个参数
+			// 系统注册的时候有这个参数 DefaultRouter 用户登录后默认的router设置为dashboard，如果注册的用户首页不是后台，需要自行更改
+			DefaultRouter: "dashboard", 
 		})
 	}
 
