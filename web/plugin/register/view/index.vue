@@ -6,9 +6,9 @@
           <img class="login-panel-form-title-logo" src="~@/assets/logo.png" alt>
           <p class="login-panel-form-title-p">{{ $GIN_VUE_ADMIN.appName }}</p>
         </div>
-        <el-form ref="loginForm" :model="registerType.value ? registerFormData : loginFormData" :rules="formRules" @keyup.enter="submitForm">
+        <el-form ref="loginForm" :model="currentFormData" :rules="formRules" @keyup.enter="submitForm">
           <el-form-item prop="username">
-            <el-input v-model="formData.username" placeholder="请输入用户名">
+            <el-input v-model="currentFormData.username" placeholder="请输入用户名">
               <template #suffix>
                 <span class="input-icon">
                   <el-icon>
@@ -19,7 +19,7 @@
             </el-input>
           </el-form-item>
           <el-form-item prop="password">
-            <el-input v-model="formData.password" :type="lock === 'lock' ? 'password' : 'text'"
+            <el-input v-model="currentFormData.password" :type="lock === 'lock' ? 'password' : 'text'"
                       placeholder="请输入密码">
               <template #suffix>
                 <span class="input-icon">
@@ -32,17 +32,17 @@
           </el-form-item>
           <el-form-item prop="captcha">
             <div class="vPicBox">
-              <el-input v-model="formData.captcha" placeholder="请输入验证码" class="captcha-input" />
+              <el-input v-model="currentFormData.captcha" placeholder="请输入验证码" class="captcha-input" />
               <div class="vPic">
                 <img v-if="picPath" :src="picPath" alt="请输入验证码" @click="loginVerify()">
               </div>
             </div>
           </el-form-item>
           <el-form-item v-if="registerType" prop="tgid">
-            <el-input v-model="formData.tgid" placeholder="请输入TGID"></el-input>
+            <el-input v-model="currentFormData.tgid" placeholder="请输入TGID"></el-input>
           </el-form-item>
           <el-form-item v-if="registerType" prop="code">
-            <el-input v-model="formData.code" placeholder="请输入TG验证码"></el-input>
+            <el-input v-model="currentFormData.code" placeholder="请输入TG验证码"></el-input>
           </el-form-item>
           <el-form-item v-if="registerType">
             <el-button @click="sendTGCode">发送TG验证码</el-button>
@@ -65,7 +65,7 @@
 <script setup>
 import { captcha } from '@/api/user'
 import { getCode } from '@/plugin/register/api/api'
-import { reactive, ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { extendedUseUserStore } from '@/plugin/register/pinia/modules/user'
@@ -102,10 +102,10 @@ const registerFormData = reactive({
   tgid: '',
   code: '',
 })
-const formData = ref(loginFormData)
 const lock = ref('lock')
 const picPath = ref('')
 const registerType = ref(false)
+const currentFormData = ref(loginFormData)
 
 const rules = reactive({
   username: [{ validator: checkUsername, trigger: 'blur' }],
@@ -127,7 +127,7 @@ const loginVerify = () => {
     rules.captcha[1].max = ele.data.captchaLength
     rules.captcha[1].min = ele.data.captchaLength
     picPath.value = ele.data.picPath
-    formData.value.captchaId = ele.data.captchaId
+    currentFormData.value.captchaId = ele.data.captchaId
   })
 }
 loginVerify()
@@ -137,10 +137,10 @@ const changeLock = () => {
 }
 
 const login = async () => {
-  return await userStore.LoginIn(formData.value)
+  return await userStore.LoginIn(loginFormData)
 }
 const register = async () => {
-  return await userStore.Register(formData.value)
+  return await userStore.Register(registerFormData)
 }
 const submitForm = () => {
   const form = loginForm.value
@@ -187,6 +187,12 @@ const sendTGCode = () => {
       })
     })
 }
+
+// 监听注册类型的变化，切换表单数据
+watch(registerType, (newValue) => {
+  currentFormData.value = newValue ? registerFormData : loginFormData
+})
+
 </script>
 
 <style scoped>
