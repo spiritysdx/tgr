@@ -69,6 +69,43 @@ func InstallPlugin
 
 #### 1
 
+修改 ```web/src/pinia/modules/user.js``` 并加入
+
+```
+...
+const Register = async (loginInfo) => {
+    loadingInstance.value = ElLoading.service({
+        fullscreen: true,
+        text: "注册中，请稍候...",
+    });
+    try {
+        const res = await userRegister(loginInfo);
+        if (res.code === 0) {
+            setUserInfo(res.data.user);
+            setToken(res.data.token);
+            const routerStore = useRouterStore();
+            await routerStore.SetAsyncRouter();
+            const asyncRouters = routerStore.asyncRouters;
+            asyncRouters.forEach((asyncRouter) => {
+                router.addRoute(asyncRouter);
+            });
+            router.push({name: userInfo.value.authority.defaultRouter});
+            return true;
+        }
+    } catch (e) {
+        loadingInstance.value.close();
+    }
+    loadingInstance.value.close();
+};
+...
+return {
+    Register,
+    ...
+}
+```
+
+#### 2
+
 查看 ```web/src/permission.js``` 并参照
 
 ```
@@ -77,7 +114,7 @@ const whiteList = ['Login', 'Init', 'Register', 'Admin']
 
 添加对应的路由名字
 
-#### 2
+#### 3
 
 查看 ```web/src/router/index.js``` 在
 

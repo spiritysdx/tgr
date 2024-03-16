@@ -68,7 +68,7 @@ import { getCode } from '@/plugin/register/api/api'
 import { reactive, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
-import { extendedUseUserStore } from '@/plugin/register/pinia/modules/user'
+import { useUserStore } from '@/src/pinia/modules/user'
 
 const router = useRouter()
 
@@ -120,7 +120,7 @@ const rules = reactive({
 
 const formRules = ref(rules)
 
-const userStore = extendedUseUserStore()
+const userStore = useUserStore()
 
 const loginVerify = () => {
   captcha({}).then((ele) => {
