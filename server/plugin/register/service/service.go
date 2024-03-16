@@ -15,7 +15,6 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	uuid "github.com/gofrs/uuid/v5"
 	"github.com/mojocn/base64Captcha"
-	// "gopkg.in/telebot.v3"
 )
 
 type RegisterService struct{}
@@ -26,7 +25,7 @@ func (e *RegisterService) Code(tgid string) (err error) {
 	// 制作四位数code
 	code := utils.RandomString(plugGlobal.GlobalConfig.CodeLength)
 	// 发送code
-	err = telegramServer.SendTgMessage(plugGlobal.GlobalConfig.TgBotToken, tgid, fmt.Sprintf("注册验证码：%v", code), "markdown")
+	err = service.ServiceGroupApp.SendTgMessage(plugGlobal.GlobalConfig.TgBotToken, tgid, fmt.Sprintf("注册验证码：<code>%v</code>", code), "html")
 	if err != nil {
 		return err
 	}

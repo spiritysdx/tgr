@@ -21,7 +21,7 @@ func InstallPlugin
   PluginInit(PublicGroup, register.CreateRegisterPlug("8881"), "tgbot的token", "验证码的长度", "频道的chat_id")
 ```
 
-这里的tgbot务必已加入到频道中并给予了管理员权限
+这里的bot务必已加入到频道中并给予了管理员权限
 
 ### web
 

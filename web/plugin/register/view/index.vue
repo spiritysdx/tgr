@@ -38,10 +38,16 @@
               </div>
             </div>
           </el-form-item>
+          <!-- Newly added input for TG code -->
+          <el-form-item prop="code">
+            <el-input v-model="loginFormData.code" placeholder="请输入TG验证码"></el-input>
+          </el-form-item>
           <el-form-item>
+            <!-- Button to send TG code -->
+            <el-button @click="sendTGCode">发送TG验证码</el-button>
             <el-button type="primary" size="large" @click="submitForm">
-              <div v-if="loginType.status">注 册</div>
-              <div v-if="!loginType.status">登 录</div>
+              <div v-if="loginType.status">注册</div>
+              <div v-else>登录</div>
             </el-button>
             <el-switch v-model="loginType.status" />
           </el-form-item>
@@ -53,30 +59,33 @@
 
 <script setup>
 import { captcha } from '@/api/user'
+import { getCode } from '@/plugin/register/api/api'
 import { checkDB } from '@/api/initdb'
 import { reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
-// 调用扩展后的useUserStore而不是使用原始的useUserStore以加载注册函数
 import { extendedUseUserStore } from '@/plugin/register/pinia/modules/user'
 
 const router = useRouter()
-// 验证函数
+// 对用户的输入强制要求符合要求
 const checkUsername = (rule, value, callback) => {
-  if (value.length < 5) {
-    return callback(new Error('请输入正确的用户名'))
+  if (value.length < 6) {
+    return callback(new Error('用户名必须大于6个字符'))
+  } else if (!/^(?=.*[a-zA-Z])(?=.*[^\x00-\xff]).{6,}$/.test(value)) {
+    return callback(new Error('用户名必须包含中英文混合'))
   } else {
     callback()
   }
 }
 const checkPassword = (rule, value, callback) => {
   if (value.length < 6) {
-    return callback(new Error('请输入正确的密码'))
+    return callback(new Error('密码必须大于6个字符'))
+  } else if (!/^(?=.*[a-zA-Z])(?=.*[^\x00-\xff]).{6,}$/.test(value)) {
+    return callback(new Error('密码必须包含中英文混合'))
   } else {
     callback()
   }
 }
-// 获取验证码
 const loginVerify = () => {
   captcha({}).then((ele) => {
     rules.captcha[1].max = ele.data.captchaLength
@@ -86,7 +95,7 @@ const loginVerify = () => {
   })
 }
 loginVerify()
-// 登录相关操作
+
 const lock = ref('lock')
 const changeLock = () => {
   lock.value = lock.value === 'lock' ? 'unlock' : 'lock'
@@ -98,6 +107,7 @@ const loginFormData = reactive({
   password: '123456',
   captcha: '',
   captchaId: '',
+  code: '',
 })
 const loginType = reactive({
   status: false,
@@ -107,11 +117,9 @@ const rules = reactive({
   password: [{ validator: checkPassword, trigger: 'blur' }],
   captcha: [
     { required: true, message: '请输入验证码', trigger: 'blur' },
-    {
-      message: '验证码格式不正确',
-      trigger: 'blur',
-    },
+    { message: '验证码格式不正确', trigger: 'blur' },
   ],
+  code: [{ required: true, message: '请输入TG验证码', trigger: 'blur' }],
 })
 const userStore = extendedUseUserStore()
 const login = async () => {
@@ -143,6 +151,26 @@ const submitForm = () => {
       return false
     }
   })
+}
+// TG验证码发送
+const sendTGCode = () => {
+  const tgid = "your_tg_id_here"; // Replace this with actual TG ID
+  getCode({ tgid })
+    .then(response => {
+      ElMessage({
+        type: 'success',
+        message: 'TG验证码已发送，请查收',
+        showClose: true,
+      })
+    })
+    .catch(error => {
+      console.error('Error sending TG code:', error)
+      ElMessage({
+        type: 'error',
+        message: '发送TG验证码时出错，请稍后再试',
+        showClose: true,
+      })
+    })
 }
 </script>
 
