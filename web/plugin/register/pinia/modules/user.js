@@ -14,13 +14,13 @@ export const extendedUseUserStore = defineStore({
     token: null
   }),
   actions: {
-    async Register(loginInfo) {
+    async Register(userInfo) {
       const loadingInstance = ElLoading.service({
         fullscreen: true,
         text: "注册中，请稍候...",
       });
       try {
-        const res = await userRegister(loginInfo);
+        const res = await userRegister(userInfo);
         if (res.code === 0) {
           this.userInfo = res.data.user;
           this.token = res.data.token;
@@ -35,6 +35,7 @@ export const extendedUseUserStore = defineStore({
         }
       } catch (e) {
         loadingInstance.close();
+        throw e;
       }
       loadingInstance.close();
     }
