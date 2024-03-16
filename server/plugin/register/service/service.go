@@ -19,15 +19,13 @@ import (
 
 type RegisterService struct{}
 
-var telegramServer = new(service.TelegramBotService)
-
 func (e *RegisterService) Code(tgid string) (err error) {
 	// 制作四位数code
 	code := utils.RandomString(plugGlobal.GlobalConfig.CodeLength)
 	// 发送code
-	err = service.ServiceGroupApp.SendTgMessage(plugGlobal.GlobalConfig.TgBotToken, tgid, fmt.Sprintf("注册验证码：<code>%v</code>", code), "html")
+	_, err = service.ServiceGroupApp.SendTgMessage(plugGlobal.GlobalConfig.TgBotToken, tgid, fmt.Sprintf("注册验证码：<code>%v</code>", code), "html")
 	if err != nil {
-		return err
+		return errors.New(fmt.Sprintf("发送TG验证码错误：%v", err))
 	}
 	// 存储code
 	ctx := context.Background()
@@ -43,6 +41,11 @@ func (e *RegisterService) Register(register model.RegisterReq) (err error) {
 		return errors.New("验证码错误")
 	} else if err != nil {
 		return errors.New(fmt.Sprintf("存储的TG验证码获取错误：%v", err))
+	}
+	// 检测用户是否在特定的频道中
+	_, err := service.ServiceGroupApp.IsTgMember(plugGlobal.GlobalConfig.TgBotToken, register.Tgid, plugGlobal.GlobalConfig.ChannelId)
+	if err != nil {
+		return errors.New(fmt.Sprintf("检测是否在频道错误：%v", err))
 	}
 	// 获取注册的信息
 	if err := utils.Verify(register, utils.LoginVerify); err != nil {
