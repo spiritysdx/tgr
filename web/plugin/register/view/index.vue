@@ -68,7 +68,7 @@ import { getCode } from '@/plugin/register/api/api'
 import { reactive, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/src/pinia/modules/user'
+import { useUserStore } from '@/pinia/modules/user'
 
 const router = useRouter()
 
