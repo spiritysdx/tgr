@@ -8,7 +8,9 @@
 
 ### 后台设置
 
-由于验证码有时限需求，需要自行安装并启用Redis数据库
+#### 数据库相关
+
+由于有TG验证码时限删除的需求，需要自行安装并启用Redis数据库
 
 在使用本插件时务必自行安装并配置gva的server目录下的```config.yaml```的
 
@@ -39,6 +41,12 @@ system:
 ![image](https://github.com/spiritysdx/tgr/assets/97792170/2ea797dc-59a1-4f2c-8f69-a7a571048370)
 
 这里启用，否则仅配置不启动也没有用
+
+#### 角色权限相关
+
+由于注册的用户默认首页设置为了```dashboard```，所以请将对应菜单的权限赋给你选择注册的用户所属的角色，否则注册成功后将直接跳转404界面
+
+如果你需要注册的用户首页不为```dashboard```，请自行修改 ```server/plugin/register/service/service.go``` 对应注释的内容，替换为你标定的路由名字
 
 ### server
 
