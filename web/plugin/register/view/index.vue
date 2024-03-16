@@ -60,7 +60,6 @@
 <script setup>
 import { captcha } from '@/api/user'
 import { getCode } from '@/plugin/register/api/api'
-import { checkDB } from '@/api/initdb'
 import { reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
@@ -69,17 +68,15 @@ import { extendedUseUserStore } from '@/plugin/register/pinia/modules/user'
 const router = useRouter()
 // 对用户的输入强制要求符合要求
 const checkUsername = (rule, value, callback) => {
-  if (value.length < 6) {
-    return callback(new Error('用户名必须大于6个字符'))
-  } else if (!/^(?=.*[a-zA-Z])(?=.*[^\x00-\xff]).{6,}$/.test(value)) {
-    return callback(new Error('用户名必须包含中英文混合'))
+  if (value.length < 5) {
+    return callback(new Error('用户名必须大于或等于5个字符'))
   } else {
     callback()
   }
 }
 const checkPassword = (rule, value, callback) => {
   if (value.length < 6) {
-    return callback(new Error('密码必须大于6个字符'))
+    return callback(new Error('密码必须大于或等于6个字符'))
   } else if (!/^(?=.*[a-zA-Z])(?=.*[^\x00-\xff]).{6,}$/.test(value)) {
     return callback(new Error('密码必须包含中英文混合'))
   } else {
