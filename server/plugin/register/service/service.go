@@ -35,6 +35,7 @@ func (e *RegisterService) Code(tgid string) (err error) {
 }
 
 func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysUser, err error) {
+    res = &system.SysUser{}
 	// 检测tgcode是否正确
 	ctx := context.Background()
 	code, err := gvaGlobal.GVA_REDIS.Get(ctx, register.Tgid).Result()
@@ -93,8 +94,8 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 			DefaultRouter: "dashboard",
 		})
 	}
-	if _, err := us.Register(*u); err != nil {
-		return res, errors.New(fmt.Sprintf("注册失败：%v", err))
+	if rest, err := us.Register(*u); err != nil {
+		return &rest, errors.New(fmt.Sprintf("注册失败：%v", err))
 	}
 	if _, err := us.Login(u); err != nil {
 		return res, errors.New(fmt.Sprintf("登录失败：%v", err))
