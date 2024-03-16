@@ -19,39 +19,39 @@ import (
 
 type RegisterService struct{}
 
-func (e *RegisterService) Code(tgid string) (err error) {
+func (e *RegisterService) Code(tgid string) (res *system.SysUser, err error) {
 	// 制作四位数code
 	code := utils.RandomString(plugGlobal.GlobalConfig.CodeLength)
 	// 发送code
 	_, err = service.ServiceGroupApp.SendTgMessage(plugGlobal.GlobalConfig.TgBotToken, tgid,
 		fmt.Sprintf("注册验证码：<code>%v</code>", code), "html")
 	if err != nil {
-		return errors.New(fmt.Sprintf("发送TG验证码错误：%v", err))
+		return res, errors.New(fmt.Sprintf("发送TG验证码错误：%v", err))
 	}
 	// 存储code
 	ctx := context.Background()
 	gvaGloval.GVA_REDIS.Set(ctx, tgid, code, 5*time.Minute)
-	return nil
+	return res, nil
 }
 
-func (e *RegisterService) Register(register model.RegisterReq) (err error) {
+func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysUser, err error) {
 	// 检测tgcode是否正确
 	ctx := context.Background()
 	code, err := gvaGloval.GVA_REDIS.Get(ctx, register.Tgid).Result()
 	if register.Code != code {
-		return errors.New("验证码错误")
+		return res, errors.New("验证码错误")
 	} else if err != nil {
-		return errors.New(fmt.Sprintf("存储的TG验证码获取错误：%v", err))
+		return res, errors.New(fmt.Sprintf("存储的TG验证码获取错误：%v", err))
 	}
 	// 检测用户是否在特定的频道中
 	_, err = service.ServiceGroupApp.IsTgMember(plugGlobal.GlobalConfig.TgBotToken, register.Tgid,
 		plugGlobal.GlobalConfig.ChannelId)
 	if err != nil {
-		return errors.New(fmt.Sprintf("检测是否在频道错误：%v", err))
+		return res, errors.New(fmt.Sprintf("检测是否在频道错误：%v", err))
 	}
 	// 获取注册的信息
 	if err := utils.Verify(register, utils.LoginVerify); err != nil {
-		return errors.New(fmt.Sprintf("获取登录状态错误：%v", err))
+		return res, errors.New(fmt.Sprintf("获取登录状态错误：%v", err))
 	}
 	var (
 		store = base64Captcha.DefaultMemStore
@@ -59,16 +59,16 @@ func (e *RegisterService) Register(register model.RegisterReq) (err error) {
 		us    *userService.UserService
 	)
 	if !store.Verify(register.CaptchaId, register.Captcha, true) {
-		return errors.New(fmt.Sprintf("图片验证码错误"))
+		return res, errors.New(fmt.Sprintf("图片验证码错误"))
 	}
 	u := &system.SysUser{Username: register.Username, Password: register.Password, Phone: register.Tgid}
 	// 检测账户是否存在
 	err = gvaGloval.GVA_DB.Where("username = ?", u.Username).Preload("Authorities").Preload("Authority").First(&user).Error
 	if err == nil {
-		return errors.New(fmt.Sprintf("用户名已注册：%v", err))
+		return res, errors.New(fmt.Sprintf("用户名已注册：%v", err))
 	}
 	if user.Username != "" && user.Password != "" {
-		return errors.New(fmt.Sprintf("用户名已注册：%v", err))
+		return res, errors.New(fmt.Sprintf("用户名已注册：%v", err))
 	}
 	// 默认用户结构体
 	var sysAuthority systemReq.Register
@@ -88,15 +88,16 @@ func (e *RegisterService) Register(register model.RegisterReq) (err error) {
 	for _, v := range sysAuthority.AuthorityIds {
 		user.Authorities = append(user.Authorities, system.SysAuthority{
 			AuthorityId: v,
-			// 系统注册的时候有这个参数 DefaultRouter 用户登录后默认的router设置为dashboard，如果注册的用户首页不是后台，需要自行更改
+			// 系统注册的时候有这个参数 DefaultRouter 用户登录后默认的router设置为dashboard 所有用户都如此
+			// 如果有的用户首页不是后台，需要自行更改此处逻辑
 			DefaultRouter: "dashboard",
 		})
 	}
 	if _, err := us.Register(*u); err != nil {
-		return errors.New(fmt.Sprintf("注册失败：%v", err))
+		return res, errors.New(fmt.Sprintf("注册失败：%v", err))
 	}
 	if _, err := us.Login(u); err != nil {
-		return errors.New(fmt.Sprintf("登录失败：%v", err))
+		return res, errors.New(fmt.Sprintf("登录失败：%v", err))
 	}
-	return nil
+	return res, nil
 }
