@@ -38,51 +38,36 @@ func InstallPlugin
 查看 ```web/src/permission.js``` 并参照
 
 ```
-const whiteList = ['Admin', 'Login', 'Init', 'Register']
+const whiteList = ['Login', 'Init', 'Register', 'Admin']
 ```
 
 添加对应的路由名字
 
 #### 2
 
-查看 ```web/src/router/index.js``` 参照
+查看 ```web/src/router/index.js``` 在
 
 ```
-const routes = [{
-  path: '/',
-  redirect: '/login'
-},
-{
-  path: '/init',
-  name: 'Init',
-  component: () => import('@/view/init/index.vue')
-},
-{
-  path: '/admin',
-  name: 'Admin',
-  component: () => import('@/view/login/index.vue')
-},
+const routes
+```
+
+中更改和添加对应内容
+
+```
 {
   path: '/login',
   name: 'Login',
-  component: () => import('@/plugin/register/view/index.vue')
+  component: () => import('@/plugin/register/view/index.vue') // 有更改 原始为 @/view/login/index.vue
 },
+// 以下为新增
 {
   path: '/register',
   name: 'Register',
   component: () => import('@/plugin/register/view/index.vue')
 },
-{
-  path: '/:catchAll(.*)',
-  meta: {
-    closeTab: true,
-  },
-  component: () => import('@/view/error/index.vue')
-}
-]
 ```
 
-进行更改，定义用户进入的首页是插件中定义的首页，而不是官方GVA定义的初始化页面
+定义用户进入的首页是插件中定义的首页，而不是官方GVA定义的初始化页面，login路由你也可以不更改，登录依然使用官方界面
 
 ## 后言
 
