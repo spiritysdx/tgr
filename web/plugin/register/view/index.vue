@@ -38,8 +38,8 @@
               </div>
             </div>
           </el-form-item>
-          <el-form-item v-if="registerType" prop="tgid">
-            <el-input v-model="currentFormData.tgid" placeholder="请输入TGID"></el-input>
+          <el-form-item v-if="registerType" prop="tg_id">
+            <el-input v-model="currentFormData.tg_id" placeholder="请输入TGID"></el-input>
           </el-form-item>
           <el-form-item v-if="registerType" prop="code">
             <el-input v-model="currentFormData.code" placeholder="请输入TG验证码"></el-input>
@@ -99,7 +99,7 @@ const registerFormData = reactive({
   password: '123456',
   captcha: '',
   captchaId: '',
-  tgid: '',
+  tg_id: '',
   code: '',
 })
 const lock = ref('lock')
@@ -114,7 +114,7 @@ const rules = reactive({
     { required: true, message: '请输入验证码', trigger: 'blur' },
     { message: '验证码格式不正确', trigger: 'blur' },
   ],
-  tgid: [{ required: true, message: '请输入TG ID', trigger: 'blur', visible: false }],
+  tg_id: [{ required: true, message: '请输入TG ID', trigger: 'blur', visible: false }],
   code: [{ required: true, message: '请输入TG验证码', trigger: 'blur', visible: false }],
 })
 
@@ -169,8 +169,8 @@ const submitForm = () => {
 }
 // TG验证码发送
 const sendTGCode = () => {
-  const tgid = registerFormData.tgid
-  getCode({ tgid })
+  const tg_id = registerFormData.tg_id
+  getCode({ tg_id })
     .then(response => {
       ElMessage({
         type: 'success',
