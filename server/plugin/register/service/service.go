@@ -12,7 +12,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/telegram_bot/service"
 	userService "github.com/flipped-aurora/gin-vue-admin/server/service/system"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
-	uuid "github.com/gofrs/uuid/v5"
+	"github.com/gofrs/uuid/v5"
 	"github.com/mojocn/base64Captcha"
 	"time"
 )
