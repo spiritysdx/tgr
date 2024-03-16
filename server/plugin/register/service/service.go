@@ -39,7 +39,7 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 	ctx := context.Background()
 	code, err := gvaGlobal.GVA_REDIS.Get(ctx, register.Tgid).Result()
 	if register.Code != code {
-		return res, errors.New("验证码错误")
+		return res, errors.New(fmt.Sprintf("验证码输入错误，输入为：%v", register.Code))
 	} else if err != nil {
 		return res, errors.New(fmt.Sprintf("存储的TG验证码获取错误：%v", err))
 	}
