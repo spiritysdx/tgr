@@ -24,11 +24,11 @@ func (p *RegisterApi) Code(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if res, err := service.ServiceGroupApp.Code(req.TgId); err != nil {
+	if err := service.ServiceGroupApp.Code(req.TgId); err != nil {
 		global.GVA_LOG.Error("发送Code失败", zap.Error(err))
 		response.FailWithMessage(err.Error(), c)
 	} else {
-		response.OkWithDetailed(res, "发送Code成功", c)
+		response.OkWithDetailed("", "发送Code成功", c)
 	}
 }
 
