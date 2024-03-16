@@ -128,6 +128,7 @@ const loginVerify = () => {
     rules.captcha[1].min = ele.data.captchaLength
     picPath.value = ele.data.picPath
     currentFormData.value.captchaId = ele.data.captchaId
+    registerFormData.captchaId = ele.data.captchaId
   })
 }
 loginVerify()
@@ -140,33 +141,48 @@ const login = async () => {
   return await userStore.LoginIn(loginFormData)
 }
 const register = async () => {
-  return await userStore.Register(registerFormData)
+//   console.log('Attempting to register...');
+  try {
+    const result = await userStore.Register(registerFormData);
+    // console.log('Register result:', result);
+    return result;
+  } catch (error) {
+    console.error('Error registering user:', error);
+    return false;
+  }
 }
-const submitForm = () => {
+const submitForm = async () => {
+//   console.log('submitForm function called');
   const form = loginForm.value
-  form.validate(async (v) => {
-    if (v) {
-      let flag
-      if (registerType.value) {
-        flag = await register()
-      } else {
-        flag = await login()
-      }
-      if (!flag) {
-        loginVerify()
-        registerType.value = false
-      }
-    } else {
-      ElMessage({
-        type: 'error',
-        message: '请正确填写登录信息',
-        showClose: true,
-      })
-      loginVerify()
-      return false
-    }
+  const validationResult = await new Promise(resolve => {
+    form.validate((valid) => {
+      resolve(valid)
+    })
   })
+  
+  if (validationResult) {
+    let flag
+    if (registerType.value) {
+    //   console.log('Attempting to register...');
+      flag = await register()
+    } else {
+    //   console.log('Attempting to login...');
+      flag = await login()
+    }
+    if (!flag) {
+      loginVerify()
+      registerType.value = false
+    }
+  } else {
+    ElMessage({
+      type: 'error',
+      message: '请正确填写登录信息',
+      showClose: true,
+    })
+    loginVerify()
+  }
 }
+
 // TG验证码发送
 const sendTGCode = () => {
   const tg_id = registerFormData.tg_id
