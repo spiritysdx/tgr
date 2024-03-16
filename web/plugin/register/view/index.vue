@@ -6,9 +6,9 @@
           <img class="login-panel-form-title-logo" src="~@/assets/logo.png" alt>
           <p class="login-panel-form-title-p">{{ $GIN_VUE_ADMIN.appName }}</p>
         </div>
-        <el-form ref="loginForm" :model="loginFormData" :rules="rules" @keyup.enter="submitForm">
+        <el-form ref="loginForm" :model="loginType.value ? registerFormData : loginFormData" :rules="formRules" @keyup.enter="submitForm">
           <el-form-item prop="username">
-            <el-input v-model="loginFormData.username" placeholder="请输入用户名">
+            <el-input v-model="formData.username" placeholder="请输入用户名">
               <template #suffix>
                 <span class="input-icon">
                   <el-icon>
@@ -19,7 +19,7 @@
             </el-input>
           </el-form-item>
           <el-form-item prop="password">
-            <el-input v-model="loginFormData.password" :type="lock === 'lock' ? 'password' : 'text'"
+            <el-input v-model="formData.password" :type="lock === 'lock' ? 'password' : 'text'"
                       placeholder="请输入密码">
               <template #suffix>
                 <span class="input-icon">
@@ -32,24 +32,29 @@
           </el-form-item>
           <el-form-item prop="captcha">
             <div class="vPicBox">
-              <el-input v-model="loginFormData.captcha" placeholder="请输入验证码" class="captcha-input" />
+              <el-input v-model="formData.captcha" placeholder="请输入验证码" class="captcha-input" />
               <div class="vPic">
                 <img v-if="picPath" :src="picPath" alt="请输入验证码" @click="loginVerify()">
               </div>
             </div>
           </el-form-item>
-          <!-- Newly added input for TG code -->
-          <el-form-item prop="code">
-            <el-input v-model="loginFormData.code" placeholder="请输入TG验证码"></el-input>
+          <el-form-item v-if="loginType" prop="tgid">
+            <el-input v-model="formData.tgid" placeholder="请输入TGID"></el-input>
+          </el-form-item>
+          <el-form-item v-if="loginType" prop="code">
+            <el-input v-model="formData.code" placeholder="请输入TG验证码"></el-input>
+          </el-form-item>
+          <el-form-item v-if="loginType">
+            <el-button @click="sendTGCode">发送TG验证码</el-button>
           </el-form-item>
           <el-form-item>
-            <!-- Button to send TG code -->
-            <el-button @click="sendTGCode">发送TG验证码</el-button>
             <el-button type="primary" size="large" @click="submitForm">
-              <div v-if="loginType.status">注册</div>
+              <div v-if="loginType">注册</div>
               <div v-else>登录</div>
             </el-button>
-            <el-switch v-model="loginType.status" />
+          </el-form-item>
+          <el-form-item>
+            <el-switch v-model="loginType" />
           </el-form-item>
         </el-form>
       </div>
@@ -66,6 +71,7 @@ import { useRouter } from 'vue-router'
 import { extendedUseUserStore } from '@/plugin/register/pinia/modules/user'
 
 const router = useRouter()
+
 // 对用户的输入强制要求符合要求
 const checkUsername = (rule, value, callback) => {
   if (value.length < 5) {
@@ -77,38 +83,30 @@ const checkUsername = (rule, value, callback) => {
 const checkPassword = (rule, value, callback) => {
   if (value.length < 6) {
     return callback(new Error('密码必须大于或等于6个字符'))
-  } else if (!/^(?=.*[a-zA-Z])(?=.*[^\x00-\xff]).{6,}$/.test(value)) {
-    return callback(new Error('密码必须包含中英文混合'))
   } else {
     callback()
   }
 }
-const loginVerify = () => {
-  captcha({}).then((ele) => {
-    rules.captcha[1].max = ele.data.captchaLength
-    rules.captcha[1].min = ele.data.captchaLength
-    picPath.value = ele.data.picPath
-    loginFormData.captchaId = ele.data.captchaId
-  })
-}
-loginVerify()
-
-const lock = ref('lock')
-const changeLock = () => {
-  lock.value = lock.value === 'lock' ? 'unlock' : 'lock'
-}
 const loginForm = ref(null)
-const picPath = ref('')
 const loginFormData = reactive({
   username: 'admin',
   password: '123456',
   captcha: '',
   captchaId: '',
+})
+const registerFormData = reactive({
+  username: 'admin',
+  password: '123456',
+  captcha: '',
+  captchaId: '',
+  tgid: '',
   code: '',
 })
-const loginType = reactive({
-  status: false,
-})
+const formData = ref(loginFormData)
+const lock = ref('lock')
+const picPath = ref('')
+const loginType = ref(false)
+
 const rules = reactive({
   username: [{ validator: checkUsername, trigger: 'blur' }],
   password: [{ validator: checkPassword, trigger: 'blur' }],
@@ -116,27 +114,47 @@ const rules = reactive({
     { required: true, message: '请输入验证码', trigger: 'blur' },
     { message: '验证码格式不正确', trigger: 'blur' },
   ],
-  code: [{ required: true, message: '请输入TG验证码', trigger: 'blur' }],
+  tgid: [{ required: true, message: '请输入TG ID', trigger: 'blur', visible: false }],
+  code: [{ required: true, message: '请输入TG验证码', trigger: 'blur', visible: false }],
 })
+
+const formRules = ref(rules)
+
 const userStore = extendedUseUserStore()
+
+const loginVerify = () => {
+  captcha({}).then((ele) => {
+    rules.captcha[1].max = ele.data.captchaLength
+    rules.captcha[1].min = ele.data.captchaLength
+    picPath.value = ele.data.picPath
+    formData.value.captchaId = ele.data.captchaId
+  })
+}
+loginVerify()
+
+const changeLock = () => {
+  lock.value = lock.value === 'lock' ? 'unlock' : 'lock'
+}
+
 const login = async () => {
-  return await userStore.LoginIn(loginFormData)
+  return await userStore.LoginIn(formData.value)
 }
 const register = async () => {
-  return await userStore.Register(loginFormData)
+  return await userStore.Register(formData.value)
 }
 const submitForm = () => {
-  loginForm.value.validate(async (v) => {
+  const form = loginForm.value
+  form.validate(async (v) => {
     if (v) {
       let flag
-      if (loginType.status) {
+      if (loginType.value) {
         flag = await register()
       } else {
         flag = await login()
       }
       if (!flag) {
         loginVerify()
-        loginType.status = false
+        loginType.value = false
       }
     } else {
       ElMessage({
@@ -151,7 +169,7 @@ const submitForm = () => {
 }
 // TG验证码发送
 const sendTGCode = () => {
-  const tgid = "your_tg_id_here"; // Replace this with actual TG ID
+  const tgid = registerFormData.tgid
   getCode({ tgid })
     .then(response => {
       ElMessage({
@@ -189,7 +207,7 @@ const sendTGCode = () => {
 }
 
 .login-panel-form-title-logo {
-  width: 100px; /* Adjust width as needed */
+  width: 100px;
 }
 
 .login-panel-form-title-p {
@@ -206,6 +224,6 @@ const sendTGCode = () => {
 }
 
 .captcha-input {
-  width: calc(100% - 90px); /* Adjust width as needed */
+  width: calc(100% - 90px);
 }
 </style>
