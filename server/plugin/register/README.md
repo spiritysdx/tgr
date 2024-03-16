@@ -16,6 +16,14 @@
 
 使用管理员权限查看 系统工具 -- 系统配置 -- Redis admin数据库配置 进行配置。
 
+![image](https://github.com/spiritysdx/tgr/assets/97792170/4122a892-0b34-4366-906f-aeb776ca99eb)
+
+务必记得启用，然后在
+
+![image](https://github.com/spiritysdx/tgr/assets/97792170/2ea797dc-59a1-4f2c-8f69-a7a571048370)
+
+这里启用，否则仅配置不启动也没有用
+
 ### server
 
 查看 ```server/initialize/plugin.go``` 文件中是否已注册插件，如若未注册，在```import```中插入
