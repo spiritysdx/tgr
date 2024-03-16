@@ -38,10 +38,10 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 	// 检测tgcode是否正确
 	ctx := context.Background()
 	code, err := gvaGlobal.GVA_REDIS.Get(ctx, register.Tgid).Result()
-	if register.Code != code {
-		return res, errors.New(fmt.Sprintf("验证码输入错误，输入为：%v", register.Code))
-	} else if err != nil {
+	if err != nil {
 		return res, errors.New(fmt.Sprintf("存储的TG验证码获取错误：%v", err))
+	} else if register.Code != code {
+		return res, errors.New(fmt.Sprintf("验证码填写错误：%v", register.Code))
 	}
 	// 检测用户是否在特定的频道中
 	_, err = service.ServiceGroupApp.IsTgMember(plugGlobal.GlobalConfig.TgBotToken, register.Tgid,
