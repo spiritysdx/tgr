@@ -6,6 +6,16 @@
 
 ## 具体说明
 
+### 后台设置
+
+由于验证码有时限需求，需要自行安装并启用Redis数据库
+
+在使用本插件时务必自行安装并配置gva的server目录下的```config.yaml```
+
+或
+
+使用管理员权限查看 系统工具 -- 系统配置 -- Redis admin数据库配置 进行配置。
+
 ### server
 
 查看 ```server/initialize/plugin.go``` 文件中是否已注册插件，如若未注册，在```import```中插入

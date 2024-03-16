@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	gvaGloval "github.com/flipped-aurora/gin-vue-admin/server/global"
+	gvaGlobal "github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	systemReq "github.com/flipped-aurora/gin-vue-admin/server/model/system/request"
 	plugGlobal "github.com/flipped-aurora/gin-vue-admin/server/plugin/register/global"
@@ -30,14 +30,14 @@ func (e *RegisterService) Code(tgid string) (res *system.SysUser, err error) {
 	}
 	// 存储code
 	ctx := context.Background()
-	gvaGloval.GVA_REDIS.Set(ctx, tgid, code, 5*time.Minute)
+	gvaGlobal.GVA_REDIS.Set(ctx, tgid, code, 5*time.Minute)
 	return res, nil
 }
 
 func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysUser, err error) {
 	// 检测tgcode是否正确
 	ctx := context.Background()
-	code, err := gvaGloval.GVA_REDIS.Get(ctx, register.Tgid).Result()
+	code, err := gvaGlobal.GVA_REDIS.Get(ctx, register.Tgid).Result()
 	if register.Code != code {
 		return res, errors.New("验证码错误")
 	} else if err != nil {
@@ -63,7 +63,7 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 	}
 	u := &system.SysUser{Username: register.Username, Password: register.Password, Phone: register.Tgid}
 	// 检测账户是否存在
-	err = gvaGloval.GVA_DB.Where("username = ?", u.Username).Preload("Authorities").Preload("Authority").First(&user).Error
+	err = gvaGlobal.GVA_DB.Where("username = ?", u.Username).Preload("Authorities").Preload("Authority").First(&user).Error
 	if err == nil {
 		return res, errors.New(fmt.Sprintf("用户名已注册：%v", err))
 	}
