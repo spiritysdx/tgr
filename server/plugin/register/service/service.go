@@ -35,7 +35,7 @@ func (e *RegisterService) Code(tgid string) (err error) {
 }
 
 func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysUser, err error) {
-    res = &system.SysUser{}
+	res = &system.SysUser{}
 	// 检测tgcode是否正确
 	ctx := context.Background()
 	code, err := gvaGlobal.GVA_REDIS.Get(ctx, register.Tgid).Result()
@@ -78,6 +78,9 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 	sysAuthority.Password = u.Password
 	sysAuthority.Phone = u.Phone
 	sysAuthority.AuthorityId = plugGlobal.GlobalConfig.AuthorityId
+	if sysAuthority.AuthorityIds == nil {
+		sysAuthority.AuthorityIds = []int{} // 初始化为空切片
+	}
 	sysAuthority.AuthorityIds = append(sysAuthority.AuthorityIds, plugGlobal.GlobalConfig.AuthorityId)
 	// 因为上面定义过，且得到了数据库默认的值，所以直接使用
 	user.Password = u.Password
