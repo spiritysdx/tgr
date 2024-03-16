@@ -20,16 +20,15 @@ type RegisterApi struct{}
 func (p *RegisterApi) Code(c *gin.Context) {
 	var req model.CodeReq
 	if err := c.ShouldBindJSON(&req); err != nil {
-		global.GVA_LOG.Error("失败!", zap.Error(err))
+		global.GVA_LOG.Error("获取tg_id失败", zap.Error(err))
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
 	if res, err := service.ServiceGroupApp.Code(req.TgId); err != nil {
-		global.GVA_LOG.Error("失败!", zap.Error(err))
+		global.GVA_LOG.Error("发送Code失败", zap.Error(err))
 		response.FailWithMessage(err.Error(), c)
 	} else {
-		var baseApi systemApi.BaseApi
-		baseApi.TokenNext(c, *res)
+		response.OkWithDetailed(res, "发送Code成功", c)
 	}
 }
 
