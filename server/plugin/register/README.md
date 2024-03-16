@@ -69,7 +69,7 @@ func InstallPlugin
 
 #### 1
 
-修改 ```web/src/pinia/modules/user.js``` 并加入
+修改 ```web/src/pinia/modules/user.js``` 在最后的return前后加上
 
 ```
 ...
