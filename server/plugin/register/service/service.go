@@ -79,7 +79,7 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 	sysAuthority.Phone = u.Phone
 	sysAuthority.AuthorityId = plugGlobal.GlobalConfig.AuthorityId
 	if sysAuthority.AuthorityIds == nil {
-		sysAuthority.AuthorityIds = []int{} // 初始化为空切片
+		sysAuthority.AuthorityIds = []uint{}
 	}
 	sysAuthority.AuthorityIds = append(sysAuthority.AuthorityIds, plugGlobal.GlobalConfig.AuthorityId)
 	// 因为上面定义过，且得到了数据库默认的值，所以直接使用
