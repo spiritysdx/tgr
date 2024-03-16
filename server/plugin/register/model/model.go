@@ -32,6 +32,6 @@ type Response struct {
 	AuthorityId string                `json:"authorityId" gorm:"default:888;comment:用户角色ID"`                                        // 用户角色ID
 	Authority   system.SysAuthority   `json:"authority" gorm:"foreignKey:AuthorityId;references:AuthorityId;comment:用户角色"`
 	Authorities []system.SysAuthority `json:"authorities" gorm:"many2many:sys_user_authority;"`
-	Phone       string                `json:"phone"  gorm:"comment:用户手机号"` // 用户手机号
+	Phone       string                `json:"phone"  gorm:"comment:用户手机号"` // 用户手机号 改写为 TG的ID了
 	Email       string                `json:"email"  gorm:"comment:用户邮箱"`  // 用户邮箱
 }
