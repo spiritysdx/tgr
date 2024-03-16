@@ -18,9 +18,9 @@ func InstallPlugin
 
 ```
   // 8881 为普通子用户ID，可自行更改替换注册的角色
-  PluginInit(PublicGroup, register.CreateRegisterPlug("角色ID", "tgbot的token", "验证码的长度", "频道的chat_id")
+  PluginInit(PublicGroup, register.CreateRegisterPlug("角色ID", "tgbot的token", "验证码的长度", "频道的chat_id"))
   // 示例
-  // PluginInit(PublicGroup, register.CreateRegisterPlug(8881, "7009xxxx:AAExxxxx", 6, "-100197xxxxx")
+  // PluginInit(PublicGroup, register.CreateRegisterPlug(8881, "7009xxxx:AAExxxxx", 6, "-100197xxxxx"))
 ```
 
 这里的bot务必已加入到频道中并给予了管理员权限
