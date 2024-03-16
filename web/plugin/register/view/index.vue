@@ -6,7 +6,7 @@
           <img class="login-panel-form-title-logo" src="~@/assets/logo.png" alt>
           <p class="login-panel-form-title-p">{{ $GIN_VUE_ADMIN.appName }}</p>
         </div>
-        <el-form ref="loginForm" :model="loginType.value ? registerFormData : loginFormData" :rules="formRules" @keyup.enter="submitForm">
+        <el-form ref="loginForm" :model="registerType.value ? registerFormData : loginFormData" :rules="formRules" @keyup.enter="submitForm">
           <el-form-item prop="username">
             <el-input v-model="formData.username" placeholder="请输入用户名">
               <template #suffix>
@@ -38,23 +38,23 @@
               </div>
             </div>
           </el-form-item>
-          <el-form-item v-if="loginType" prop="tgid">
+          <el-form-item v-if="registerType" prop="tgid">
             <el-input v-model="formData.tgid" placeholder="请输入TGID"></el-input>
           </el-form-item>
-          <el-form-item v-if="loginType" prop="code">
+          <el-form-item v-if="registerType" prop="code">
             <el-input v-model="formData.code" placeholder="请输入TG验证码"></el-input>
           </el-form-item>
-          <el-form-item v-if="loginType">
+          <el-form-item v-if="registerType">
             <el-button @click="sendTGCode">发送TG验证码</el-button>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" size="large" @click="submitForm">
-              <div v-if="loginType">注册</div>
+              <div v-if="registerType">注册</div>
               <div v-else>登录</div>
             </el-button>
           </el-form-item>
           <el-form-item>
-            <el-switch v-model="loginType" />
+            <el-switch v-model="registerType" />
           </el-form-item>
         </el-form>
       </div>
@@ -105,7 +105,7 @@ const registerFormData = reactive({
 const formData = ref(loginFormData)
 const lock = ref('lock')
 const picPath = ref('')
-const loginType = ref(false)
+const registerType = ref(false)
 
 const rules = reactive({
   username: [{ validator: checkUsername, trigger: 'blur' }],
@@ -147,14 +147,14 @@ const submitForm = () => {
   form.validate(async (v) => {
     if (v) {
       let flag
-      if (loginType.value) {
+      if (registerType.value) {
         flag = await register()
       } else {
         flag = await login()
       }
       if (!flag) {
         loginVerify()
-        loginType.value = false
+        registerType.value = false
       }
     } else {
       ElMessage({
