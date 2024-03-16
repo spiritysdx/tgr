@@ -19,19 +19,19 @@ import (
 
 type RegisterService struct{}
 
-func (e *RegisterService) Code(tgid string) (res *system.SysUser, err error) {
+func (e *RegisterService) Code(tgid string) (err error) {
 	// 制作四位数code
 	code := utils.RandomString(plugGlobal.GlobalConfig.CodeLength)
 	// 发送code
 	_, err = service.ServiceGroupApp.SendTgMessage(plugGlobal.GlobalConfig.TgBotToken, tgid,
 		fmt.Sprintf("注册验证码：<code>%v</code>", code), "html")
 	if err != nil {
-		return res, errors.New(fmt.Sprintf("发送TG验证码错误：%v", err))
+		return errors.New(fmt.Sprintf("发送TG验证码错误：%v", err))
 	}
 	// 存储code
 	ctx := context.Background()
 	gvaGlobal.GVA_REDIS.Set(ctx, tgid, code, 5*time.Minute)
-	return res, nil
+	return nil
 }
 
 func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysUser, err error) {
