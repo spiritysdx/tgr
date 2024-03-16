@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 	gvaGloval "github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	systemReq "github.com/flipped-aurora/gin-vue-admin/server/model/system/request"
@@ -15,6 +14,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	uuid "github.com/gofrs/uuid/v5"
 	"github.com/mojocn/base64Captcha"
+	"time"
 )
 
 type RegisterService struct{}
@@ -23,7 +23,8 @@ func (e *RegisterService) Code(tgid string) (err error) {
 	// 制作四位数code
 	code := utils.RandomString(plugGlobal.GlobalConfig.CodeLength)
 	// 发送code
-	_, err = service.ServiceGroupApp.SendTgMessage(plugGlobal.GlobalConfig.TgBotToken, tgid, fmt.Sprintf("注册验证码：<code>%v</code>", code), "html")
+	_, err = service.ServiceGroupApp.SendTgMessage(plugGlobal.GlobalConfig.TgBotToken, tgid,
+		fmt.Sprintf("注册验证码：<code>%v</code>", code), "html")
 	if err != nil {
 		return errors.New(fmt.Sprintf("发送TG验证码错误：%v", err))
 	}
@@ -36,14 +37,15 @@ func (e *RegisterService) Code(tgid string) (err error) {
 func (e *RegisterService) Register(register model.RegisterReq) (err error) {
 	// 检测tgcode是否正确
 	ctx := context.Background()
-	code, err := gvaGloval.GVA_REDIS.Get(ctx, register.Tgid)
+	code, err := gvaGloval.GVA_REDIS.Get(ctx, register.Tgid).Result()
 	if register.Code != code {
 		return errors.New("验证码错误")
 	} else if err != nil {
 		return errors.New(fmt.Sprintf("存储的TG验证码获取错误：%v", err))
 	}
 	// 检测用户是否在特定的频道中
-	_, err := service.ServiceGroupApp.IsTgMember(plugGlobal.GlobalConfig.TgBotToken, register.Tgid, plugGlobal.GlobalConfig.ChannelId)
+	_, err = service.ServiceGroupApp.IsTgMember(plugGlobal.GlobalConfig.TgBotToken, register.Tgid,
+		plugGlobal.GlobalConfig.ChannelId)
 	if err != nil {
 		return errors.New(fmt.Sprintf("检测是否在频道错误：%v", err))
 	}
@@ -59,7 +61,7 @@ func (e *RegisterService) Register(register model.RegisterReq) (err error) {
 	if !store.Verify(register.CaptchaId, register.Captcha, true) {
 		return errors.New(fmt.Sprintf("图片验证码错误"))
 	}
-	u := &system.SysUser{Username: register.Username, Password: register.Password, Tgid: register.Tgid}
+	u := &system.SysUser{Username: register.Username, Password: register.Password, Phone: register.Tgid}
 	// 检测账户是否存在
 	err = gvaGloval.GVA_DB.Where("username = ?", u.Username).Preload("Authorities").Preload("Authority").First(&user).Error
 	if err == nil {
@@ -81,7 +83,7 @@ func (e *RegisterService) Register(register model.RegisterReq) (err error) {
 	user.UUID, _ = uuid.NewV4()
 	user.Username = u.Username
 	user.NickName = u.Username
-	user.Phone = u.Tgid
+	user.Phone = u.Phone
 	user.AuthorityId = plugGlobal.GlobalConfig.AuthorityId
 	for _, v := range sysAuthority.AuthorityIds {
 		user.Authorities = append(user.Authorities, system.SysAuthority{
