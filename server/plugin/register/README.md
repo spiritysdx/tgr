@@ -8,13 +8,19 @@
 
 ### server
 
-查看 ```server/initialize/plugin.go``` 文件中是否已注册插件，如若未注册，在
+查看 ```server/initialize/plugin.go``` 文件中是否已注册插件，如若未注册，在```import```中插入
+
+```
+"github.com/flipped-aurora/gin-vue-admin/server/plugin/register"
+```
+
+在函数
 
 ```
 func InstallPlugin
 ```
 
-函数中插入
+中插入
 
 ```
   // 8881 为普通子用户ID，可自行更改替换注册的角色
