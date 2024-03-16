@@ -10,7 +10,23 @@
 
 由于验证码有时限需求，需要自行安装并启用Redis数据库
 
-在使用本插件时务必自行安装并配置gva的server目录下的```config.yaml```
+在使用本插件时务必自行安装并配置gva的server目录下的```config.yaml```的
+
+```
+redis:
+    addr: 127.0.0.1:6379
+    password: ""
+    db: 0
+```
+
+和
+
+```
+system:
+    ....
+    use-redis: true
+    ....
+```
 
 或
 
