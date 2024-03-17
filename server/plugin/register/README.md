@@ -42,12 +42,6 @@ system:
 
 这里启用，否则仅配置不启动也没有用
 
-#### 角色权限相关
-
-由于注册的用户默认首页设置为了```dashboard```，所以请将对应菜单的权限赋给你选择注册的用户所属的角色，否则注册成功后将直接跳转404界面，此时你需要清除页面cookie才能刷新页面使用管理员账户登录回后台去修改注册用户角色的首页权限了
-
-如果你需要注册的用户首页不为```dashboard```，请自行修改 ```server/plugin/register/service/service.go``` 对应注释的内容，替换为你标定的路由名字
-
 ### server
 
 查看 ```server/initialize/plugin.go``` 文件中是否已注册插件，如若未注册，在```import```中插入
@@ -65,7 +59,7 @@ func InstallPlugin
 中插入
 
 ```
-  // 8881 为普通子用户ID，可自行更改替换注册的角色，注意该角色无 dashboard 的访问权限，请自行后台菜单权限管理进行设置
+  // 8881 为普通子用户ID，可自行更改替换注册的角色
   PluginInit(PublicGroup, register.CreateRegisterPlug("角色ID", "tgbot的token", "验证码的长度", "频道的chat_id"))
   // 示例
   // PluginInit(PublicGroup, register.CreateRegisterPlug(8881, "7009xxxx:AAExxxxx", 6, "-100197xxxxx"))
