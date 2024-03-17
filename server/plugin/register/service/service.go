@@ -9,7 +9,6 @@ import (
 	plugGlobal "github.com/flipped-aurora/gin-vue-admin/server/plugin/register/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/register/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/telegram_bot/service"
-	userService "github.com/flipped-aurora/gin-vue-admin/server/service/system"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	"github.com/gofrs/uuid/v5"
 	"github.com/mojocn/base64Captcha"
@@ -56,7 +55,7 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 	var (
 		store = base64Captcha.DefaultMemStore
 		user  system.SysUser
-		us    *userService.UserService
+		//us    *userService.UserService
 	)
 	if !store.Verify(register.CaptchaId, register.Captcha, true) {
 		return res, errors.New(fmt.Sprintf("图片验证码错误"))
@@ -84,8 +83,8 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 	if err != nil {
 		return res, errors.New(fmt.Sprintf("注册错误：%v", err))
 	}
-	if _, err := us.Login(u); err != nil {
-		return res, errors.New(fmt.Sprintf("登录失败：%v", err))
-	}
+	//if _, err := us.Login(u); err != nil {
+	//	return res, errors.New(fmt.Sprintf("登录失败：%v", err))
+	//}
 	return res, nil
 }
