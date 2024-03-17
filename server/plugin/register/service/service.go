@@ -11,6 +11,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/telegram_bot/service"
 	userService "github.com/flipped-aurora/gin-vue-admin/server/service/system"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
+	"github.com/gofrs/uuid/v5"
 	"github.com/mojocn/base64Captcha"
 	"time"
 )
@@ -64,7 +65,8 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 	register.Password = utils.BcryptHash(register.Password)
 	// 创建用户需要传入的信息
 	// 用 Phone 字段存用户的 TGID 了
-	u := &system.SysUser{Username: register.Username, Password: register.Password, NickName: "注册用户", Phone: register.Tgid, AuthorityId: plugGlobal.GlobalConfig.AuthorityId}
+	UUID, _ := uuid.NewV4()
+	u := &system.SysUser{UUID: UUID, Username: register.Username, Password: register.Password, NickName: "注册用户", Phone: register.Tgid, AuthorityId: plugGlobal.GlobalConfig.AuthorityId}
 	// 检测传入信息是否为空
 	if u.Username == "" {
 		return res, errors.New(fmt.Sprintf("用户名为空：%v", err))
@@ -73,9 +75,9 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 		return res, errors.New(fmt.Sprintf("密码为空：%v", err))
 	}
 	// 检测账户是否存在
-	err = gvaGlobal.GVA_DB.Where("username = ?", u.Username).Preload("Authorities").Preload("Authority").First(&user).Error
-	if err != nil {
-		return res, errors.New(fmt.Sprintf("用户名已注册：%v", err))
+	err = gvaGlobal.GVA_DB.Where("tgid = ?", u.Phone).First(&user).Error
+	if err == nil {
+		return res, errors.New(fmt.Sprintf("该TGID已注册"))
 	}
 	// 创建用户
 	err = gvaGlobal.GVA_DB.Create(&u).Error
