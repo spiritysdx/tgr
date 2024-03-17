@@ -82,10 +82,7 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 	// 创建用户
 	err = gvaGlobal.GVA_DB.Create(&u).Error
 	if err != nil {
-		return res, errors.New(fmt.Sprintf("创建用户错误：%v", err))
-	}
-	if rest, err := us.Register(*u); err != nil {
-		return &rest, errors.New(fmt.Sprintf("注册失败：%v", err))
+		return res, errors.New(fmt.Sprintf("注册错误：%v", err))
 	}
 	if _, err := us.Login(u); err != nil {
 		return res, errors.New(fmt.Sprintf("登录失败：%v", err))
