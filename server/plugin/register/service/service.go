@@ -6,13 +6,11 @@ import (
 	"fmt"
 	gvaGlobal "github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
-	systemReq "github.com/flipped-aurora/gin-vue-admin/server/model/system/request"
 	plugGlobal "github.com/flipped-aurora/gin-vue-admin/server/plugin/register/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/register/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/telegram_bot/service"
 	userService "github.com/flipped-aurora/gin-vue-admin/server/service/system"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
-	"github.com/gofrs/uuid/v5"
 	"github.com/mojocn/base64Captcha"
 	"time"
 )
@@ -62,40 +60,27 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 	if !store.Verify(register.CaptchaId, register.Captcha, true) {
 		return res, errors.New(fmt.Sprintf("图片验证码错误"))
 	}
-	u := &system.SysUser{Username: register.Username, Password: register.Password, Phone: register.Tgid}
+	// 加密密码
+	register.Password = utils.BcryptHash(register.Password)
+	// 创建用户需要传入的信息
+	// 用 Phone 字段存用户的 TGID 了
+	u := &system.SysUser{Username: register.Username, Password: register.Password, NickName: "注册用户", Phone: register.Tgid, AuthorityId: plugGlobal.GlobalConfig.AuthorityId}
+	// 检测传入信息是否为空
+	if u.Username == "" {
+		return res, errors.New(fmt.Sprintf("用户名为空：%v", err))
+	}
+	if u.Password == "" {
+		return res, errors.New(fmt.Sprintf("密码为空：%v", err))
+	}
 	// 检测账户是否存在
 	err = gvaGlobal.GVA_DB.Where("username = ?", u.Username).Preload("Authorities").Preload("Authority").First(&user).Error
-	if err == nil {
+	if err != nil {
 		return res, errors.New(fmt.Sprintf("用户名已注册：%v", err))
 	}
-	if user.Username != "" && user.Password != "" {
-		return res, errors.New(fmt.Sprintf("用户名已注册：%v", err))
-	}
-	// 默认用户结构体
-	var sysAuthority systemReq.Register
-	sysAuthority.Username = u.Username
-	sysAuthority.NickName = u.NickName
-	sysAuthority.Password = u.Password
-	sysAuthority.Phone = u.Phone
-	sysAuthority.AuthorityId = plugGlobal.GlobalConfig.AuthorityId
-	if sysAuthority.AuthorityIds == nil {
-		sysAuthority.AuthorityIds = []uint{}
-	}
-	sysAuthority.AuthorityIds = append(sysAuthority.AuthorityIds, plugGlobal.GlobalConfig.AuthorityId)
-	// 因为上面定义过，且得到了数据库默认的值，所以直接使用
-	user.Password = u.Password
-	user.UUID, _ = uuid.NewV4()
-	user.Username = u.Username
-	user.NickName = u.Username
-	user.Phone = u.Phone
-	user.AuthorityId = plugGlobal.GlobalConfig.AuthorityId
-	for _, v := range sysAuthority.AuthorityIds {
-		user.Authorities = append(user.Authorities, system.SysAuthority{
-			AuthorityId: v,
-			// 系统注册的时候有这个参数 DefaultRouter 用户登录后默认的router设置为dashboard 所有用户都如此
-			// 如果有的用户首页不是后台，需要自行更改此处逻辑
-			DefaultRouter: "dashboard",
-		})
+	// 创建用户
+	err = gvaGlobal.GVA_DB.Create(&u).Error
+	if err != nil {
+		return res, errors.New(fmt.Sprintf("创建用户错误：%v", err))
 	}
 	if rest, err := us.Register(*u); err != nil {
 		return &rest, errors.New(fmt.Sprintf("注册失败：%v", err))
