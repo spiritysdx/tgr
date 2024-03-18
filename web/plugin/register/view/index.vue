@@ -161,13 +161,16 @@ const submitForm = async () => {
       resolve(valid)
     })
   })
-  
   if (validationResult) {
     let flag
     if (registerType.value) {
       flag = await register()
       if (flag) {
-        flag = await login()
+        ElMessage({
+          type: 'success',
+          message: '注册成功，请刷新页面进行登录',
+          showClose: true,
+        })
       }
     } else {
       flag = await login()
