@@ -9,7 +9,6 @@ import (
 	plugGlobal "github.com/flipped-aurora/gin-vue-admin/server/plugin/register/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/register/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/telegram_bot/service"
-	userService "github.com/flipped-aurora/gin-vue-admin/server/service/system"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	"github.com/gofrs/uuid/v5"
 	"github.com/mojocn/base64Captcha"
@@ -56,13 +55,11 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 	var (
 		store = base64Captcha.DefaultMemStore
 		user  system.SysUser
-		us    *userService.UserService
 	)
 	if !store.Verify(register.CaptchaId, register.Captcha, true) {
 		return res, errors.New(fmt.Sprintf("图片验证码错误"))
 	}
 	// 加密密码
-	plaintext_password := register.Password
 	register.Password = utils.BcryptHash(register.Password)
 	// 创建用户需要传入的信息
 	// 用 Phone 字段存用户的 TGID 了
@@ -93,11 +90,6 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 	err = gvaGlobal.GVA_DB.Create(&a).Error
 	if err != nil {
 		return res, errors.New(fmt.Sprintf("注册角色失败：%v", err))
-	}
-	// 创建完毕后密码需要改回明文密码再登录
-	u.Password = plaintext_password
-	if _, err := us.Login(u); err != nil {
-		return res, errors.New(fmt.Sprintf("登录失败：%v", err))
 	}
 	return res, nil
 }
