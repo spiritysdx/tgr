@@ -67,7 +67,9 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 	// 创建用户需要传入的信息
 	// 用 Phone 字段存用户的 TGID 了
 	UUID, _ := uuid.NewV4()
-	u := &system.SysUser{UUID: UUID, Username: register.Username, Password: register.Password, NickName: "注册用户", Phone: register.Tgid, AuthorityId: plugGlobal.GlobalConfig.AuthorityId}
+	u := &system.SysUser{UUID: UUID, Username: register.Username, Password: register.Password, NickName: "注册用户",
+		Phone: register.Tgid, AuthorityId: plugGlobal.GlobalConfig.AuthorityId,
+		Authority: system.SysAuthority{DefaultRouter: "dashboard", AuthorityId: plugGlobal.GlobalConfig.AuthorityId}}
 	// 检测传入信息是否为空
 	if u.Username == "" {
 		return res, errors.New(fmt.Sprintf("用户名为空：%v", err))
