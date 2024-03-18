@@ -160,14 +160,16 @@ const submitForm = async () => {
     let flag
     if (registerType.value) {
       flag = await register()
+      if (flag) {
+        // 注册成功后立即登录
+        await login()
+      }
     } else {
       flag = await login()
     }
     if (!flag) {
       loginVerify()
       registerType.value = false
-    } else {
-      await login()
     }
   } else {
     ElMessage({
@@ -178,6 +180,7 @@ const submitForm = async () => {
     loginVerify()
   }
 }
+
 
 // TG验证码发送
 const sendTGCode = () => {
