@@ -141,7 +141,6 @@ const login = async () => {
   return await userStore.LoginIn(loginFormData)
 }
 const register = async () => {
-//   console.log('Attempting to register...');
   try {
     const result = await userStore.Register(registerFormData);
     // console.log('Register result:', result);
@@ -152,7 +151,6 @@ const register = async () => {
   }
 }
 const submitForm = async () => {
-//   console.log('submitForm function called');
   const form = loginForm.value
   const validationResult = await new Promise(resolve => {
     form.validate((valid) => {
@@ -163,15 +161,15 @@ const submitForm = async () => {
   if (validationResult) {
     let flag
     if (registerType.value) {
-    //   console.log('Attempting to register...');
       flag = await register()
     } else {
-    //   console.log('Attempting to login...');
       flag = await login()
     }
     if (!flag) {
       loginVerify()
       registerType.value = false
+    } else {
+      router.push('/login')
     }
   } else {
     ElMessage({
