@@ -9,6 +9,7 @@ import (
 	plugGlobal "github.com/flipped-aurora/gin-vue-admin/server/plugin/register/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/register/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/telegram_bot/service"
+	userService "github.com/flipped-aurora/gin-vue-admin/server/service/system"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	"github.com/gofrs/uuid/v5"
 	"github.com/mojocn/base64Captcha"
@@ -55,7 +56,7 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 	var (
 		store = base64Captcha.DefaultMemStore
 		user  system.SysUser
-		//us    *userService.UserService
+		us    *userService.UserService
 	)
 	if !store.Verify(register.CaptchaId, register.Captcha, true) {
 		return res, errors.New(fmt.Sprintf("图片验证码错误"))
@@ -74,7 +75,7 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 		return res, errors.New(fmt.Sprintf("密码为空：%v", err))
 	}
 	// 检测账户是否存在
-	err = gvaGlobal.GVA_DB.Where("tgid = ?", u.Phone).First(&user).Error
+	err = gvaGlobal.GVA_DB.Where("phone = ?", u.Phone).First(&user).Error
 	if err == nil {
 		return res, errors.New(fmt.Sprintf("该TGID已注册"))
 	}
@@ -83,8 +84,10 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 	if err != nil {
 		return res, errors.New(fmt.Sprintf("注册错误：%v", err))
 	}
-	//if _, err := us.Login(u); err != nil {
-	//	return res, errors.New(fmt.Sprintf("登录失败：%v", err))
-	//}
+	// 创建完毕后密码需要改回去登录
+	u.Password = register.Password
+	if _, err := us.Login(u); err != nil {
+		return res, errors.New(fmt.Sprintf("登录失败：%v", err))
+	}
 	return res, nil
 }
