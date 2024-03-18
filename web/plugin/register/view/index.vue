@@ -31,22 +31,20 @@
             </el-input>
           </el-form-item>
           <el-form-item prop="captcha">
-            <div class="vPicBox">
-              <el-input v-model="currentFormData.captcha" placeholder="请输入验证码" class="captcha-input" />
-              <div class="vPic">
-                <img v-if="picPath" :src="picPath" alt="请输入验证码" @click="loginVerify()">
-              </div>
+            <div class="captcha-input-container">
+              <el-input v-model="currentFormData.captcha" placeholder="请输入验证码" class="captcha-input" style="width: calc(100% - 150px);" />
+              <img v-if="picPath" :src="picPath" alt="请输入验证码" @click="loginVerify()" class="captcha-image">
             </div>
           </el-form-item>
           <el-form-item v-if="registerType" prop="tg_id">
             <el-input v-model="currentFormData.tg_id" placeholder="请输入TGID"></el-input>
           </el-form-item>
-          <el-form-item v-if="registerType" prop="code">
-            <el-input v-model="currentFormData.code" placeholder="请输入TG验证码"></el-input>
-          </el-form-item>
-          <el-form-item v-if="registerType">
-            <el-button @click="sendTGCode">发送TG验证码</el-button>
-          </el-form-item>
+          <el-form-item v-if="registerType" prop="code" class="form-item-inline">
+              <el-input v-model="currentFormData.code" placeholder="请输入TG验证码"></el-input>
+              <div class="send-tg-code-container">
+                <el-button @click="sendTGCode">发送TG验证码</el-button>
+              </div>
+            </el-form-item>
           <el-form-item>
             <el-button type="primary" size="large" @click="submitForm">
               <div v-if="registerType">注册</div>
@@ -69,9 +67,7 @@ import { reactive, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/pinia/modules/user'
-
 const router = useRouter()
-
 // 对用户的输入强制要求符合要求
 const checkUsername = (rule, value, callback) => {
   if (value.length < 5) {
@@ -106,7 +102,6 @@ const lock = ref('lock')
 const picPath = ref('')
 const registerType = ref(false)
 const currentFormData = ref(loginFormData)
-
 const rules = reactive({
   username: [{ validator: checkUsername, trigger: 'blur' }],
   password: [{ validator: checkPassword, trigger: 'blur' }],
@@ -119,9 +114,7 @@ const rules = reactive({
 })
 
 const formRules = ref(rules)
-
 const userStore = useUserStore()
-
 const loginVerify = () => {
   captcha({}).then((ele) => {
     rules.captcha[1].max = ele.data.captchaLength
@@ -132,7 +125,6 @@ const loginVerify = () => {
   })
 }
 loginVerify()
-
 const changeLock = () => {
   lock.value = lock.value === 'lock' ? 'unlock' : 'lock'
 }
@@ -153,7 +145,6 @@ const register = async () => {
     return false;
   }
 }
-
 const submitForm = async () => {
   const form = loginForm.value
   const validationResult = await new Promise(resolve => {
@@ -188,8 +179,6 @@ const submitForm = async () => {
     loginVerify()
   }
 }
-
-
 // TG验证码发送
 const sendTGCode = () => {
   const tg_id = registerFormData.tg_id
@@ -210,12 +199,10 @@ const sendTGCode = () => {
       })
     })
 }
-
 // 监听注册类型的变化，切换表单数据
 watch(registerType, (newValue) => {
   currentFormData.value = newValue ? registerFormData : loginFormData
 })
-
 </script>
 
 <style scoped>
@@ -225,34 +212,47 @@ watch(registerType, (newValue) => {
   align-items: center;
   height: 100%;
 }
-
 .login-panel-form {
   max-width: 400px;
   width: 100%;
 }
-
 .login-panel-form-title {
   text-align: center;
 }
-
 .login-panel-form-title-logo {
   width: 100px;
 }
-
 .login-panel-form-title-p {
   margin-top: 10px;
   font-size: 20px;
   font-weight: bold;
 }
-
 .input-icon {
   position: absolute;
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
 }
-
+.captcha-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
 .captcha-input {
-  width: calc(100% - 90px);
+  width: calc(100% - 150px);
+}
+.captcha-image {
+  margin-left: 10px;
+  cursor: pointer;
+}
+.form-item-inline .el-input {
+  display: inline-block;
+  width: calc(100% - 120px);
+}
+.form-item-inline .send-tg-code-container {
+  display: inline-block;
+  width: 120px;
+  margin-top: 0;
+  text-align: right;
 }
 </style>
