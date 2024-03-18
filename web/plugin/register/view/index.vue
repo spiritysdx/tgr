@@ -138,7 +138,12 @@ const changeLock = () => {
 }
 
 const login = async () => {
-  return await userStore.LoginIn(loginFormData)
+  try {
+    await userStore.LoginIn(loginFormData)
+    return true;
+  } catch (error) {
+    return false;
+  }
 }
 const register = async () => {
   try {
@@ -148,6 +153,7 @@ const register = async () => {
     return false;
   }
 }
+
 const submitForm = async () => {
   const form = loginForm.value
   const validationResult = await new Promise(resolve => {
@@ -161,8 +167,7 @@ const submitForm = async () => {
     if (registerType.value) {
       flag = await register()
       if (flag) {
-        // 注册成功后立即登录
-        await login()
+        flag = await login()
       }
     } else {
       flag = await login()
