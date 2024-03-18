@@ -134,6 +134,11 @@ const routes
 
 ```
 {
+  path: '/admin',
+  name: 'Admin',
+  component: () => import('@/view/login/index.vue')
+},
+{
   path: '/login',
   name: 'Login',
   component: () => import('@/plugin/register/view/index.vue') // 有更改 原始为 @/view/login/index.vue
