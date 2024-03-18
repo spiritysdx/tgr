@@ -62,6 +62,7 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 		return res, errors.New(fmt.Sprintf("图片验证码错误"))
 	}
 	// 加密密码
+	plaintext_password := register.Password
 	register.Password = utils.BcryptHash(register.Password)
 	// 创建用户需要传入的信息
 	// 用 Phone 字段存用户的 TGID 了
@@ -85,7 +86,7 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 		return res, errors.New(fmt.Sprintf("注册错误：%v", err))
 	}
 	// 创建完毕后密码需要改回去登录
-	u.Password = register.Password
+	u.Password = plaintext_password
 	if _, err := us.Login(u); err != nil {
 		return res, errors.New(fmt.Sprintf("登录失败：%v", err))
 	}
