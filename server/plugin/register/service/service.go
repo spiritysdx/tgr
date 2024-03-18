@@ -78,7 +78,7 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 	// 检测账户是否存在
 	err = gvaGlobal.GVA_DB.Where("phone = ?", u.Phone).First(&user).Error
 	if err == nil {
-		return res, errors.New(fmt.Sprintf("该TGID已注册"))
+		return res, errors.New(fmt.Sprintf("该TGID已注册，用户名为：%v", user.Username))
 	}
 	// 创建用户账户
 	err = gvaGlobal.GVA_DB.Create(&u).Error
