@@ -80,12 +80,19 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 	if err == nil {
 		return res, errors.New(fmt.Sprintf("该TGID已注册"))
 	}
-	// 创建用户
+	// 创建用户账户
 	err = gvaGlobal.GVA_DB.Create(&u).Error
 	if err != nil {
-		return res, errors.New(fmt.Sprintf("注册错误：%v", err))
+		return res, errors.New(fmt.Sprintf("注册账户失败：%v", err))
 	}
-	// 创建完毕后密码需要改回去登录
+	// 创建用户角色
+	gvaGlobal.GVA_DB.Where("phone = ?", u.Phone).First(&user) // 查询对应tgid的用户id存到user里
+	a := &system.SysUserAuthority{SysUserId: user.ID, SysAuthorityAuthorityId: plugGlobal.GlobalConfig.AuthorityId}
+	err = gvaGlobal.GVA_DB.Create(&a).Error
+	if err != nil {
+		return res, errors.New(fmt.Sprintf("注册角色失败：%v", err))
+	}
+	// 创建完毕后密码需要改回明文密码再登录
 	u.Password = plaintext_password
 	if _, err := us.Login(u); err != nil {
 		return res, errors.New(fmt.Sprintf("登录失败：%v", err))
