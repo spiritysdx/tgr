@@ -142,11 +142,9 @@ const login = async () => {
 }
 const register = async () => {
   try {
-    const result = await userStore.Register(registerFormData);
-    // console.log('Register result:', result);
-    return result;
+    await userStore.Register(registerFormData);
+    return true;
   } catch (error) {
-    console.error('Error registering user:', error);
     return false;
   }
 }
@@ -169,7 +167,7 @@ const submitForm = async () => {
       loginVerify()
       registerType.value = false
     } else {
-      router.push('/login')
+      await login()
     }
   } else {
     ElMessage({
