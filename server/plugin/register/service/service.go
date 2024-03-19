@@ -149,15 +149,18 @@ func (e *RegisterService) Login(loginUser model.LoginReq, key string) (res *syst
 		sysus system.SysUser
 	)
 	var store = base64Captcha.DefaultMemStore // server/api/v1/system/sys_captcha.go
-	// 检测用户是否在特定的频道中
-	err = gvaGlobal.GVA_DB.Where("username = ?", loginUser.Username).First(&sysus).Error
-	if err != nil {
-		return res, errors.New(fmt.Sprintf("检测不到该用户：%v", err))
-	}
-	_, err = service.ServiceGroupApp.IsTgMember(plugGlobal.GlobalConfig.TgBotToken, sysus.Phone,
-		plugGlobal.GlobalConfig.ChannelId)
-	if err != nil {
-		return res, errors.New(fmt.Sprintf("检测到用户不在频道中：%v", err))
+	// 如果用户名是管理员，则不检测
+	if loginUser.Username != "admin" && loginUser.Username != "a303176530" {
+		// 检测普通注册用户是否在特定的频道中
+		err = gvaGlobal.GVA_DB.Where("username = ?", loginUser.Username).First(&sysus).Error
+		if err != nil {
+			return res, errors.New(fmt.Sprintf("检测不到该用户：%v", err))
+		}
+		_, err = service.ServiceGroupApp.IsTgMember(plugGlobal.GlobalConfig.TgBotToken, sysus.Phone,
+			plugGlobal.GlobalConfig.ChannelId)
+		if err != nil {
+			return res, errors.New(fmt.Sprintf("检测到用户不在频道中：%v", err))
+		}
 	}
 	// 后续内容修改自 server/api/v1/system/sys_user.go
 	if err := utils.Verify(loginUser, utils.LoginVerify); err != nil {

@@ -74,7 +74,7 @@ func InstallPlugin
 修改 ```web/src/pinia/modules/user.js``` 在 ```import```那块加上
 
 ```
-import { userRegister } from '@/plugin/register/api/api'
+import { userRegister, ULogin } from '@/plugin/register/api/api'
 ```
 
 在最后的return前后加上
@@ -87,7 +87,7 @@ const Register = async (loginInfo) => {
         text: "注册中，请稍候...",
     });
     try {
-        const res = await userRegister(loginInfo);
+        const res = await URegister(loginInfo);
         if (res.code === 0) {
             setUserInfo(res.data.user);
             setToken(res.data.token);
@@ -105,9 +105,53 @@ const Register = async (loginInfo) => {
     }
     loadingInstance.value.close();
 };
-...
+const UserLogin = async (loginInfo) => {
+    loadingInstance.value = ElLoading.service({
+    fullscreen: true,
+    text: '登录中，请稍候...',
+    });
+    try {
+    console.log("try login");
+    const res = await ULogin(loginInfo);
+    console.log("Login response:", res);
+    if (res.code === 0) {
+        setUserInfo(res.data.user);
+        setToken(res.data.token);
+        const routerStore = useRouterStore();
+        await routerStore.SetAsyncRouter();
+        const asyncRouters = routerStore.asyncRouters;
+        asyncRouters.forEach(asyncRouter => {
+        router.addRoute(asyncRouter);
+        });
+
+        console.log("User info:", userInfo.value);
+        if (!router.hasRoute(userInfo.value.authority.defaultRouter)) {
+        ElMessage.error('请联系管理员进行授权');
+        } else {
+        console.log("Redirecting to:", userInfo.value.authority.defaultRouter);
+        await router.replace({ name: userInfo.value.authority.defaultRouter });
+        console.log("Redirected successfully.");
+        }
+
+        loadingInstance.value.close();
+
+        const isWin = ref(/windows/i.test(navigator.userAgent));
+        if (isWin.value) {
+        window.localStorage.setItem('osType', 'WIN');
+        } else {
+        window.localStorage.setItem('osType', 'MAC');
+        }
+        return true;
+    }
+    } catch (e) {
+    console.log("Login error:", e);
+    loadingInstance.value.close();
+    }
+    loadingInstance.value.close();
+}
 return {
     Register,
+    UserLogin,
     ...
 }
 ```

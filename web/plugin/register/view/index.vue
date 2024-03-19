@@ -131,7 +131,7 @@ const changeLock = () => {
 
 const login = async () => {
   try {
-    await userStore.LoginIn(loginFormData)
+    await userStore.ULogin(loginFormData)
     return true;
   } catch (error) {
     return false;
@@ -139,7 +139,7 @@ const login = async () => {
 }
 const register = async () => {
   try {
-    await userStore.Register(registerFormData);
+    await userStore.URegister(registerFormData);
     return true;
   } catch (error) {
     return false;

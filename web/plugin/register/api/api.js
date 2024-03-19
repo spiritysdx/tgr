@@ -16,7 +16,7 @@ export const getCode = (data) => {
 // @Produce  application/json
 // @Param data body {username:"string", password:"string", tgid:"string", code:"string", captcha:"string", captchaId:"string"}
 // @Router /register/register [post]
-export const userRegister = (data) => {
+export const URegister = (data) => {
   return service({
     url: '/register/register',
     method: 'post',
@@ -28,7 +28,7 @@ export const userRegister = (data) => {
 // @Produce  application/json
 // @Param data body {tgid:"string", code:"string", password:"string", new_password:"string"}
 // @Router /register/register [post]
-export const changePassword = (data) => {
+export const UChangePassword = (data) => {
   return service({
     url: '/register/changePassword',
     method: 'post',
@@ -40,7 +40,7 @@ export const changePassword = (data) => {
 // @Produce  application/json
 // @Param data body {username:"string", password:"string", captcha:"string", captchaId:"string"}
 // @Router /register/login [post]
-export const userLogin = (data) => {
+export const ULogin = (data) => {
   return service({
     url: '/register/login',
     method: 'post',
