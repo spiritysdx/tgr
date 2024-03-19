@@ -139,7 +139,7 @@ const submitForm = () => {
       } else {
         ElMessage({
           type: "error",
-          message: "表单验证失败，请检查输入",
+          message: "填写有误，请检查输入",
           showClose: true,
         });
       }
