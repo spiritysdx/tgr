@@ -176,13 +176,13 @@ func (e *RegisterService) Login(loginUser model.LoginReq, key string) (res *syst
 	var oc bool = openCaptcha == 0 || openCaptcha < interfaceToInt(v)
 	if !oc || (loginUser.CaptchaId != "" && loginUser.Captcha != "" && store.Verify(loginUser.CaptchaId, loginUser.Captcha, true)) {
 		u := &system.SysUser{Username: loginUser.Username, Password: loginUser.Password}
-		user, err := us.Login(u)
+		res, err := us.Login(u)
 		if err != nil {
 			// 验证码次数+1
 			gvaGlobal.BlackCache.Increment(key, 1)
 			return res, errors.New(fmt.Sprintf("用户名不存在或者密码错误: %v", err))
 		}
-		if user.Enable != 1 {
+		if res.Enable != 1 {
 			gvaGlobal.GVA_LOG.Error("登陆失败! 用户被禁止登录!")
 			// 验证码次数+1
 			gvaGlobal.BlackCache.Increment(key, 1)
