@@ -161,7 +161,7 @@ return {
 查看 ```web/src/permission.js``` 并参照
 
 ```
-const whiteList = ['Login', 'Init', 'Register', 'Admin']
+const whiteList = ['Login', 'Init', 'Register', 'Admin', 'Resetpwd']
 ```
 
 添加对应的路由名字
@@ -177,6 +177,7 @@ const routes
 中更改和添加对应内容
 
 ```
+// 以下为有更改的部分
 {
   path: '/admin',
   name: 'Admin',
@@ -187,11 +188,16 @@ const routes
   name: 'Login',
   component: () => import('@/plugin/register/view/index.vue') // 有更改 原始为 @/view/login/index.vue
 },
-// 以下为新增
+// 以下为新增的部分
 {
   path: '/register',
   name: 'Register',
   component: () => import('@/plugin/register/view/index.vue')
+},
+{
+  path: '/resetpwd',
+  name: 'Resetpwd',
+  component: () => import('@/plugin/register/view/resetpwd.vue')
 },
 ```
 

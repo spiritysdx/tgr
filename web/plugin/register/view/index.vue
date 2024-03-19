@@ -46,10 +46,11 @@
               </div>
             </el-form-item>
           <el-form-item>
-            <el-button type="primary" size="large" @click="submitForm">
+          <el-button type="primary" size="large" @click="submitForm">
               <div v-if="registerType">注册</div>
               <div v-else>登录</div>
             </el-button>
+            <el-button type="text" size="large" @click="goToResetPage">找回密码</el-button>
           </el-form-item>
           <el-form-item>
             <el-switch v-model="registerType" />
@@ -198,6 +199,10 @@ const sendTGCode = () => {
         showClose: true,
       })
     })
+}
+// 跳转密码重置界面
+const goToResetPage = () => {
+  router.push("/resetpwd")
 }
 // 监听注册类型的变化，切换表单数据
 watch(registerType, (newValue) => {
