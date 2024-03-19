@@ -159,7 +159,7 @@ func (e *RegisterService) Login(loginUser model.LoginReq, key string) (res *syst
 	if err != nil {
 		return res, errors.New(fmt.Sprintf("检测到用户不在频道中：%v", err))
 	}
-	// server/api/v1/system/sys_user.go
+	// 后续内容修改自 server/api/v1/system/sys_user.go
 	if err := utils.Verify(loginUser, utils.LoginVerify); err != nil {
 		return res, errors.New(fmt.Sprintf("登录验证失败: %v", err))
 	}
