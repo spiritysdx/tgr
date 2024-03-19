@@ -1,6 +1,7 @@
 package api
 
 import (
+	systemApi "github.com/flipped-aurora/gin-vue-admin/server/api/v1/system"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/register/model"
@@ -47,6 +48,7 @@ func (p *RegisterApi) Register(c *gin.Context) {
 		global.GVA_LOG.Error("失败!", zap.Error(err))
 		response.FailWithMessage(err.Error(), c)
 	} else {
-		response.OkWithDetailed(*res, "注冊成功", c)
+		var baseApi systemApi.BaseApi
+		baseApi.TokenNext(c, *res)
 	}
 }

@@ -159,7 +159,7 @@ const submitForm = async () => {
       if (flag) {
         ElMessage({
           type: 'success',
-          message: '注册成功，请刷新页面进行登录',
+          message: '注册成功',
           showClose: true,
         })
       }
