@@ -81,7 +81,7 @@ import { URegister, ULogin } from '@/plugin/register/api/api'
 
 ```
 ...
-const Register = async (loginInfo) => {
+const UserTgRegister = async (loginInfo) => {
     loadingInstance.value = ElLoading.service({
         fullscreen: true,
         text: "注册中，请稍候...",
@@ -105,7 +105,7 @@ const Register = async (loginInfo) => {
     }
     loadingInstance.value.close();
 };
-const UserLogin = async (loginInfo) => {
+const UserTgLogin = async (loginInfo) => {
     loadingInstance.value = ElLoading.service({
     fullscreen: true,
     text: '登录中，请稍候...',
@@ -150,8 +150,8 @@ const UserLogin = async (loginInfo) => {
     loadingInstance.value.close();
 }
 return {
-    Register,
-    UserLogin,
+    UserTgRegister,
+    UserTgLogin,
     ...
 }
 ```
