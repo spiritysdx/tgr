@@ -23,3 +23,15 @@ export const userRegister = (data) => {
     data: data,
   })
 }
+
+// @Summary 密码修改
+// @Produce  application/json
+// @Param data body {tgid:"string", code:"string", password:"string", new_password:"string"}
+// @Router /register/register [post]
+export const changePassword = (data) => {
+  return service({
+    url: '/register/changePassword',
+    method: 'post',
+    data: data,
+  })
+}

@@ -9,7 +9,7 @@ import (
 	plugGlobal "github.com/flipped-aurora/gin-vue-admin/server/plugin/register/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/register/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/telegram_bot/service"
-	userService "github.com/flipped-aurora/gin-vue-admin/server/service/system"
+	userServiceSystem "github.com/flipped-aurora/gin-vue-admin/server/service/system"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	"github.com/gofrs/uuid/v5"
 	"github.com/mojocn/base64Captcha"
@@ -56,7 +56,7 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 	var (
 		store = base64Captcha.DefaultMemStore
 		user  system.SysUser
-		us    *userService.UserService
+		us    *userServiceSystem.UserService
 	)
 	if !store.Verify(register.CaptchaId, register.Captcha, true) {
 		return res, errors.New(fmt.Sprintf("图片验证码错误"))
@@ -100,4 +100,32 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 		return res, errors.New("登陆失败!")
 	}
 	return res, nil
+}
+
+func (e *RegisterService) ChangePassword(changer model.ChangePasswordReq) (err error) {
+	var user system.SysUser
+	// 检测tgcode是否正确
+	ctx := context.Background()
+	code, err := gvaGlobal.GVA_REDIS.Get(ctx, changer.Tgid).Result()
+	if err != nil {
+		return errors.New(fmt.Sprintf("存储的TG验证码获取错误：%v", err))
+	} else if changer.Code != code {
+		return errors.New(fmt.Sprintf("验证码填写错误：%v", changer.Code))
+	}
+	// 检测账户是否存在
+	err = gvaGlobal.GVA_DB.Where("phone = ?", changer.Tgid).First(&user).Error
+	if err != nil {
+		return errors.New(fmt.Sprintf("查询不到该TGID的用户：%v", changer.Tgid))
+	}
+	// 修改密码
+	u := &system.SysUser{GVA_MODEL: gvaGlobal.GVA_MODEL{ID: user.ID}, Password: changer.Password}
+	if err = gvaGlobal.GVA_DB.Where("id = ?", u.ID).First(&user).Error; err != nil {
+		return err
+	}
+	if ok := utils.BcryptCheck(u.Password, user.Password); !ok {
+		return errors.New("原密码错误")
+	}
+	user.Password = utils.BcryptHash(changer.NewPassword)
+	err = gvaGlobal.GVA_DB.Save(&user).Error
+	return err
 }
