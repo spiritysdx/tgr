@@ -186,7 +186,7 @@ const submitForm = async () => {
       if (flag) {
         ElMessage({
           type: "success",
-          message: "注册成功",
+          message: "注册成功，正在跳转后台界面...",
           showClose: true,
         });
       }
