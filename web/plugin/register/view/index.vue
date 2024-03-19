@@ -64,7 +64,9 @@
               placeholder="请输入TG验证码"
             ></el-input>
             <div class="send-tg-code-container">
-              <el-button @click="sendTGCode">发送TG验证码</el-button>
+              <el-button type="primary" size="middle" @click="sendTGCode"
+                >发送TG验证码</el-button
+              >
             </div>
           </el-form-item>
           <el-form-item>
@@ -72,7 +74,7 @@
               <div v-if="registerType">注册</div>
               <div v-else>登录</div>
             </el-button>
-            <el-button type="text" size="large" @click="goToResetPage"
+            <el-button type="primary" size="large" @click="goToResetPage"
               >找回密码</el-button
             >
           </el-form-item>

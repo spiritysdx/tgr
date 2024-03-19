@@ -30,7 +30,9 @@
                 style="width: calc(100% - 150px)"
               />
               <div class="send-tg-code-container">
-                <el-button @click="sendTGCode">发送TG验证码</el-button>
+                <el-button type="primary" size="middle" @click="sendTGCode"
+                  >发送TG验证码</el-button
+                >
               </div>
             </div>
           </el-form-item>
