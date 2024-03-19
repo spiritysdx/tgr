@@ -64,7 +64,7 @@
               placeholder="请输入TG验证码"
             ></el-input>
             <div class="send-tg-code-container">
-              <el-button type="primary" size="default" @click="sendTGCode"
+              <el-button type="primary" size="middle" @click="sendTGCode"
                 >发送TG验证码</el-button
               >
             </div>
@@ -158,7 +158,7 @@ const changeLock = () => {
 
 const login = async () => {
   try {
-    await userStore.ULogin(loginFormData);
+    await userStore.UserLogin(loginFormData);
     return true;
   } catch (error) {
     return false;
