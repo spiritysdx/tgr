@@ -23,7 +23,7 @@ func (e *RegisterService) Code(tgid string) (err error) {
 	code := utils.RandomString(plugGlobal.GlobalConfig.CodeLength)
 	// 发送code
 	_, err = service.ServiceGroupApp.SendTgMessage(plugGlobal.GlobalConfig.TgBotToken, tgid,
-		fmt.Sprintf("注册验证码：<code>%v</code>", code), "html")
+		fmt.Sprintf("验证码：<code>%v</code>", code), "html")
 	if err != nil {
 		return errors.New(fmt.Sprintf("发送TG验证码错误：%v", err))
 	}
