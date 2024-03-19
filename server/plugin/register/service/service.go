@@ -47,7 +47,7 @@ func (e *RegisterService) Register(register model.RegisterReq) (res *system.SysU
 	_, err = service.ServiceGroupApp.IsTgMember(plugGlobal.GlobalConfig.TgBotToken, register.Tgid,
 		plugGlobal.GlobalConfig.ChannelId)
 	if err != nil {
-		return res, errors.New(fmt.Sprintf("检测是否在频道错误：%v", err))
+		return res, errors.New(fmt.Sprintf("检测到用户不在频道中：%v", err))
 	}
 	// 获取注册的信息
 	if err := utils.Verify(register, utils.LoginVerify); err != nil {
@@ -120,7 +120,7 @@ func (e *RegisterService) ChangePassword(changer model.ChangePasswordReq) (err e
 	// 修改密码
 	u := &system.SysUser{GVA_MODEL: gvaGlobal.GVA_MODEL{ID: user.ID}, Password: changer.Password}
 	if err = gvaGlobal.GVA_DB.Where("id = ?", u.ID).First(&user).Error; err != nil {
-		return err
+		return errors.New(fmt.Sprintf("查询对应ID的用户失败：%v", err))
 	}
 	if ok := utils.BcryptCheck(u.Password, user.Password); !ok {
 		return errors.New("原密码错误")
@@ -128,4 +128,66 @@ func (e *RegisterService) ChangePassword(changer model.ChangePasswordReq) (err e
 	user.Password = utils.BcryptHash(changer.NewPassword)
 	err = gvaGlobal.GVA_DB.Save(&user).Error
 	return err
+}
+
+// 类型转换
+// server/api/v1/system/sys_captcha.go
+func interfaceToInt(v interface{}) (i int) {
+	switch v := v.(type) {
+	case int:
+		i = v
+	default:
+		i = 0
+	}
+	return
+}
+
+func (e *RegisterService) Login(loginUser model.LoginReq, key string) (res *system.SysUser, err error) {
+	res = &system.SysUser{}
+	var (
+		us    *userServiceSystem.UserService
+		sysus system.SysUser
+	)
+	var store = base64Captcha.DefaultMemStore // server/api/v1/system/sys_captcha.go
+	// 检测用户是否在特定的频道中
+	err = gvaGlobal.GVA_DB.Where("username = ?", loginUser.Username).First(&sysus).Error
+	if err != nil {
+		return res, errors.New(fmt.Sprintf("检测不到该用户：%v", err))
+	}
+	_, err = service.ServiceGroupApp.IsTgMember(plugGlobal.GlobalConfig.TgBotToken, sysus.Phone,
+		plugGlobal.GlobalConfig.ChannelId)
+	if err != nil {
+		return res, errors.New(fmt.Sprintf("检测到用户不在频道中：%v", err))
+	}
+	// server/api/v1/system/sys_user.go
+	if err := utils.Verify(loginUser, utils.LoginVerify); err != nil {
+		return res, errors.New(fmt.Sprintf("登录验证失败: %v", err))
+	}
+	// 判断验证码是否开启
+	openCaptcha := gvaGlobal.GVA_CONFIG.Captcha.OpenCaptcha               // 是否开启防爆次数
+	openCaptchaTimeOut := gvaGlobal.GVA_CONFIG.Captcha.OpenCaptchaTimeOut // 缓存超时时间
+	v, ok := gvaGlobal.BlackCache.Get(key)
+	if !ok {
+		gvaGlobal.BlackCache.Set(key, 1, time.Second*time.Duration(openCaptchaTimeOut))
+	}
+	var oc bool = openCaptcha == 0 || openCaptcha < interfaceToInt(v)
+	if !oc || (loginUser.CaptchaId != "" && loginUser.Captcha != "" && store.Verify(loginUser.CaptchaId, loginUser.Captcha, true)) {
+		u := &system.SysUser{Username: loginUser.Username, Password: loginUser.Password}
+		user, err := us.Login(u)
+		if err != nil {
+			// 验证码次数+1
+			gvaGlobal.BlackCache.Increment(key, 1)
+			return res, errors.New(fmt.Sprintf("用户名不存在或者密码错误: %v", err))
+		}
+		if user.Enable != 1 {
+			gvaGlobal.GVA_LOG.Error("登陆失败! 用户被禁止登录!")
+			// 验证码次数+1
+			gvaGlobal.BlackCache.Increment(key, 1)
+			return res, errors.New("用户被禁止登录")
+		}
+		return res, nil
+	}
+	// 验证码次数+1
+	gvaGlobal.BlackCache.Increment(key, 1)
+	return res, errors.New("验证码错误")
 }

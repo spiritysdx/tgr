@@ -19,3 +19,10 @@ type ChangePasswordReq struct {
 	Password    string `json:"password"`     // 原密码
 	NewPassword string `json:"new_password"` // 新密码
 }
+
+type LoginReq struct {
+	Username  string `json:"username"`  // 用户名
+	Password  string `json:"password"`  // 密码
+	Captcha   string `json:"captcha"`   // 验证码
+	CaptchaId string `json:"captchaId"` // 验证码ID
+}

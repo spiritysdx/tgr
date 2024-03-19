@@ -78,3 +78,24 @@ func (p *RegisterApi) ChangePassword(c *gin.Context) {
 		response.OkWithMessage("修改密码成功", c)
 	}
 }
+
+// @Tags Login
+// @Summary 用户登录
+// @Produce  application/json
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"发送成功"}"
+// @Router /register/login [post]
+func (p *RegisterApi) Login(c *gin.Context) {
+	var req model.LoginReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		global.GVA_LOG.Error("绑定JSON失败", zap.Error(err))
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if res, err := service.ServiceGroupApp.Login(req); err != nil {
+		global.GVA_LOG.Error("用户登录失败", zap.Error(err))
+		response.FailWithMessage(err.Error(), c)
+	} else {
+		var baseApi systemApi.BaseApi
+		baseApi.TokenNext(c, *res)
+	}
+}
