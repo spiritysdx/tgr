@@ -17,3 +17,9 @@ gva: 2.6.1
 由于有TG发信和获取频道用户信息的需求，所以需要事先安装GVA插件市场中的```灰机消息发送插件```(也即是 https://github.com/spiritysdx/tgm )
 
 用户需要事先私聊过机器人，否则机器人无法主动私聊用户，且注册用户在频道中不应该为管理员身份，仅为普通订阅者
+
+界面展示
+
+![screenshot-1710854022227](https://github.com/spiritysdx/tgr/assets/97792170/a90b138f-6d70-4485-84db-b5e87187c40a)
+![screenshot-1710854046018](https://github.com/spiritysdx/tgr/assets/97792170/a1b6a231-c49e-43c5-9f83-145d0a05a208)
+![screenshot-1710854032749](https://github.com/spiritysdx/tgr/assets/97792170/d24dc87f-7397-4f11-9f47-6c9405b3bdcc)
