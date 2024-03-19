@@ -37,11 +37,11 @@
               </div>
             </div>
           </el-form-item>
-          <el-form-item prop="oldPassword">
+          <el-form-item prop="newPassword">
             <el-input
-              v-model="resetFormData.oldPassword"
+              v-model="resetFormData.newPassword"
               :type="lock === 'lock' ? 'password' : 'text'"
-              placeholder="请输入旧密码"
+              placeholder="请输入新密码"
             >
               <template #suffix>
                 <span class="input-icon">
@@ -52,11 +52,11 @@
               </template>
             </el-input>
           </el-form-item>
-          <el-form-item prop="newPassword">
+          <el-form-item prop="confirmPassword">
             <el-input
-              v-model="resetFormData.newPassword"
+              v-model="resetFormData.confirmPassword"
               :type="lock === 'lock' ? 'password' : 'text'"
-              placeholder="请输入新密码"
+              placeholder="请再次输入新密码"
             >
               <template #suffix>
                 <span class="input-icon">
@@ -85,28 +85,38 @@ import { ElMessage } from "element-plus";
 
 const resetFormData = reactive({
   tg_id: "",
-  oldPassword: "",
   newPassword: "",
+  confirmPassword: "",
   code: "",
 });
 
 const lock = ref("lock");
-
+const confirmPasswordValidator = (rule, value, callback) => {
+  if (value !== resetFormData.newPassword) {
+    callback(new Error("两次输入的密码不一致"));
+  } else {
+    callback();
+  }
+};
 const resetFormRules = reactive({
   tg_id: [{ required: true, message: "请输入TG ID", trigger: "blur" }],
-  oldPassword: [{ required: true, message: "请输入旧密码", trigger: "blur" }],
   newPassword: [{ required: true, message: "请输入新密码", trigger: "blur" }],
+  confirmPassword: [
+    { required: true, message: "请再次输入新密码", trigger: "blur" },
+    { validator: confirmPasswordValidator, trigger: "blur" }
+  ],
   code: [{ required: true, message: "请输入TG验证码", trigger: "blur" }],
 });
 
 const changeLock = () => {
   lock.value = lock.value === "lock" ? "unlock" : "lock";
 };
-
 const submitForm = () => {
   const validationResult = $refs.resetPasswordForm.validate();
   if (validationResult) {
-    UChangePassword(resetFormData)
+    // Remove confirmPassword before sending data to backend
+    const { confirmPassword, ...requestData } = resetFormData;
+    UChangePassword(requestData)
       .then(() => {
         ElMessage({
           type: "success",

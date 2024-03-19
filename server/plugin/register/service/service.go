@@ -118,12 +118,9 @@ func (e *RegisterService) ChangePassword(changer model.ChangePasswordReq) (err e
 		return errors.New(fmt.Sprintf("查询不到该TGID的用户：%v", changer.Tgid))
 	}
 	// 修改密码
-	u := &system.SysUser{GVA_MODEL: gvaGlobal.GVA_MODEL{ID: user.ID}, Password: changer.Password}
+	u := &system.SysUser{GVA_MODEL: gvaGlobal.GVA_MODEL{ID: user.ID}}
 	if err = gvaGlobal.GVA_DB.Where("id = ?", u.ID).First(&user).Error; err != nil {
 		return errors.New(fmt.Sprintf("查询对应ID的用户失败：%v", err))
-	}
-	if ok := utils.BcryptCheck(u.Password, user.Password); !ok {
-		return errors.New("原密码错误")
 	}
 	user.Password = utils.BcryptHash(changer.NewPassword)
 	err = gvaGlobal.GVA_DB.Save(&user).Error

@@ -16,7 +16,6 @@ type RegisterReq struct {
 type ChangePasswordReq struct {
 	Tgid        string `json:"tg_id"`        // 用户的TGID
 	Code        string `json:"code"`         // tg验证码
-	Password    string `json:"password"`     // 原密码
 	NewPassword string `json:"new_password"` // 新密码
 }
 
