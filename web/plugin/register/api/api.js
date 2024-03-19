@@ -35,3 +35,15 @@ export const changePassword = (data) => {
     data: data,
   })
 }
+
+// @Summary 用户登录
+// @Produce  application/json
+// @Param data body {username:"string", password:"string", captcha:"string", captchaId:"string"}
+// @Router /register/login [post]
+export const userLogin = (data) => {
+  return service({
+    url: '/register/login',
+    method: 'post',
+    data: data,
+  })
+}
