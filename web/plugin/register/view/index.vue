@@ -237,53 +237,77 @@ watch(registerType, (newValue) => {
 </script>
 
 <style scoped>
-.login-panel {
+#userLayout {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: 100vh;
 }
+
 .login-panel-form {
   max-width: 400px;
   width: 100%;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
+
 .login-panel-form-title {
   text-align: center;
+  margin-bottom: 20px;
 }
+
 .login-panel-form-title-logo {
   width: 100px;
 }
+
 .login-panel-form-title-p {
-  margin-top: 10px;
-  font-size: 20px;
+  font-size: 24px;
   font-weight: bold;
+  margin: 10px 0;
 }
+
+.el-input {
+  width: 100%;
+}
+
 .input-icon {
   position: absolute;
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
 }
+
 .captcha-input-container {
   position: relative;
   display: flex;
   align-items: center;
 }
+
 .captcha-input {
   width: calc(100% - 150px);
 }
+
 .captcha-image {
   margin-left: 10px;
   cursor: pointer;
 }
+
 .form-item-inline .el-input {
   display: inline-block;
   width: calc(100% - 120px);
 }
-.form-item-inline .send-tg-code-container {
+
+.send-tg-code-container {
   display: inline-block;
   width: 120px;
   margin-top: 0;
   text-align: right;
+}
+
+.send-tg-code-button {
+  max-width: 100%;
+  white-space: nowrap;
 }
 </style>

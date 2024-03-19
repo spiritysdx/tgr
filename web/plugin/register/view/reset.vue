@@ -9,8 +9,9 @@
             alt
           />
           <p class="reset-password-panel-form-title-p">
-            {{ $GIN_VUE_ADMIN.appName }}密码重置
+            {{ $GIN_VUE_ADMIN.appName }}
           </p>
+          <p class="reset-password-panel-form-title-p">密码重置</p>
         </div>
         <el-form
           ref="resetPasswordForm"
@@ -146,45 +147,62 @@ const sendTGCode = () => {
 </script>
 
 <style scoped>
-.reset-password-panel {
+#resetPasswordLayout {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: 100vh;
 }
+
 .reset-password-panel-form {
   max-width: 400px;
   width: 100%;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
+
 .reset-password-panel-form-title {
   text-align: center;
+  margin-bottom: 20px;
 }
+
 .reset-password-panel-form-title-logo {
   width: 100px;
 }
+
 .reset-password-panel-form-title-p {
-  margin-top: 10px;
-  font-size: 20px;
+  font-size: 24px;
   font-weight: bold;
+  margin: 10px 0;
 }
+
+.el-input {
+  width: 100%;
+}
+
 .input-icon {
   position: absolute;
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
 }
+
 .code-input-container {
-  position: relative;
   display: flex;
   align-items: center;
 }
+
 .code-input {
   width: calc(100% - 150px);
 }
+
 .send-tg-code-container {
-  display: inline-block;
-  width: 120px;
-  margin-top: 0;
-  text-align: right;
+  margin-left: 10px;
+}
+
+.el-button--primary {
+  width: 100%;
 }
 </style>
