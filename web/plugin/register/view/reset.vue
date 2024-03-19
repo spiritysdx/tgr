@@ -89,7 +89,7 @@ const resetFormData = reactive({
   re_password: "",
   code: "",
 });
-
+const resetPasswordForm = ref(null);
 const lock = ref("lock");
 const confirmPasswordValidator = (rule, value, callback) => {
   if (value !== resetFormData.re_password) {
@@ -111,31 +111,30 @@ const resetFormRules = reactive({
 const changeLock = () => {
   lock.value = lock.value === "lock" ? "unlock" : "lock";
 };
-const resetPasswordFormRef = ref(null);
 const submitForm = () => {
-  const validationResult = resetPasswordFormRef.value.validate();
-  if (validationResult) {
-    // Remove confirmPassword before sending data to backend
-    const { re_password, ...requestData } = resetFormData;
-    UChangePassword(requestData)
-      .then(() => {
-        ElMessage({
-          type: "success",
-          message: "密码重置成功",
-          showClose: true,
+  if (resetPasswordForm.value) {
+    const validationResult = resetPasswordForm.value.validate();
+    if (validationResult) {
+      const { re_password, ...requestData } = resetFormData;
+      UChangePassword(requestData)
+        .then(() => {
+          ElMessage({
+            type: "success",
+            message: "密码重置成功",
+            showClose: true,
+          });
+        })
+        .catch((error) => {
+          console.error("Error resetting password:", error);
+          ElMessage({
+            type: "error",
+            message: "密码重置失败，请稍后再试",
+            showClose: true,
+          });
         });
-      })
-      .catch((error) => {
-        console.error("Error resetting password:", error);
-        ElMessage({
-          type: "error",
-          message: "密码重置失败，请稍后再试",
-          showClose: true,
-        });
-      });
+    }
   }
 };
-
 const sendTGCode = () => {
   const tg_id = resetFormData.tg_id;
   getCode({ tg_id })
