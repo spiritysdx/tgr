@@ -75,7 +75,7 @@ func (p *RegisterApi) ChangePassword(c *gin.Context) {
 		global.GVA_LOG.Error("修改密码失败", zap.Error(err))
 		response.FailWithMessage(err.Error(), c)
 	} else {
-		response.OkWithMessage("修改密码成功", c)
+		response.OkWithMessage("修改密码成功，请回到登录页面登录", c)
 	}
 }
 

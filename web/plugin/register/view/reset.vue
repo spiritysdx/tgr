@@ -120,9 +120,10 @@ const submitForm = () => {
         .then(() => {
           ElMessage({
             type: "success",
-            message: "密码重置成功",
+            message: "密码重置成功，正在跳转登录界面...",
             showClose: true,
           });
+          router.push("/login");
         })
         .catch((error) => {
           console.error("Error resetting password:", error);
