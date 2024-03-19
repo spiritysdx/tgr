@@ -231,8 +231,10 @@ const goToResetPage = () => {
   router.push("/resetpwd");
 };
 // 监听注册类型的变化，切换表单数据
-watch(registerType, (newValue) => {
-  currentFormData.value = newValue ? registerFormData : loginFormData;
+watch(registerType, (newValue, oldValue) => {
+  if (newValue === true && oldValue === false) {
+    registerFormData = currentFormData.value;
+  }
 });
 </script>
 
