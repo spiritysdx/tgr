@@ -92,13 +92,15 @@ const resetFormData = reactive({
 });
 const resetPasswordForm = ref(null);
 const lock = ref("lock");
+
 const confirmPasswordValidator = (rule, value, callback) => {
-  if (value !== resetFormData.re_password) {
+  if (value !== resetFormData.new_password) {
     callback(new Error("两次输入的密码不一致"));
   } else {
     callback();
   }
 };
+
 const resetFormRules = reactive({
   tg_id: [{ required: true, message: "请输入TG ID", trigger: "blur" }],
   new_password: [{ required: true, message: "请输入新密码", trigger: "blur" }],
@@ -114,27 +116,34 @@ const changeLock = () => {
 };
 const submitForm = () => {
   if (resetPasswordForm.value) {
-    const validationResult = resetPasswordForm.value.validate();
-    if (validationResult) {
-      const { re_password, ...requestData } = resetFormData;
-      UChangePassword(requestData)
-        .then(() => {
-          ElMessage({
-            type: "success",
-            message: "密码重置成功，正在跳转登录界面...",
-            showClose: true,
+    resetPasswordForm.value.validate((valid) => {
+      if (valid) {
+        const { re_password, ...requestData } = resetFormData;
+        UChangePassword(requestData)
+          .then(() => {
+            ElMessage({
+              type: "success",
+              message: "密码重置成功，正在跳转登录界面...",
+              showClose: true,
+            });
+            router.push("/login");
+          })
+          .catch((error) => {
+            console.error("Error resetting password:", error);
+            ElMessage({
+              type: "error",
+              message: "密码重置失败，请稍后再试",
+              showClose: true,
+            });
           });
-          router.push("/login");
-        })
-        .catch((error) => {
-          console.error("Error resetting password:", error);
-          ElMessage({
-            type: "error",
-            message: "密码重置失败，请稍后再试",
-            showClose: true,
-          });
+      } else {
+        ElMessage({
+          type: "error",
+          message: "表单验证失败，请检查输入",
+          showClose: true,
         });
-    }
+      }
+    });
   }
 };
 const sendTGCode = () => {
