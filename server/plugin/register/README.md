@@ -74,7 +74,7 @@ func InstallPlugin
 修改 ```web/src/pinia/modules/user.js``` 在 ```import```那块加上
 
 ```
-import { URegister, ULogin } from '@/plugin/register/api/api'
+import { TGRRegister, TGRLogin } from '@/plugin/register/api/api'
 ```
 
 在最后的return前后加上
@@ -87,7 +87,7 @@ const UserTgRegister = async (loginInfo) => {
         text: "注册中，请稍候...",
     });
     try {
-        const res = await URegister(loginInfo);
+        const res = await TGRRegister(loginInfo);
         if (res.code === 0) {
             setUserInfo(res.data.user);
             setToken(res.data.token);
@@ -112,7 +112,7 @@ const UserTgLogin = async (loginInfo) => {
     });
     try {
     console.log("try login");
-    const res = await ULogin(loginInfo);
+    const res = await TGRLogin(loginInfo);
     console.log("Login response:", res);
     if (res.code === 0) {
         setUserInfo(res.data.user);

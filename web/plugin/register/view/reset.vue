@@ -79,7 +79,7 @@
 </template>
 
 <script setup>
-import { getCode, UChangePassword } from "@/plugin/register/api/api";
+import { getCode, TGRChangePassword } from "@/plugin/register/api/api";
 import { reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
@@ -119,7 +119,7 @@ const submitForm = () => {
     resetPasswordForm.value.validate((valid) => {
       if (valid) {
         const { re_password, ...requestData } = resetFormData;
-        UChangePassword(requestData)
+        TGRChangePassword(requestData)
           .then(() => {
             ElMessage({
               type: "success",

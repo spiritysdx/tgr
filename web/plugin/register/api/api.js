@@ -4,7 +4,7 @@ import service from '@/utils/request'
 // @Produce  application/json
 // @Param data body {tgid: "string"}
 // @Router /register/code [post]
-export const getCode = (data) => {
+export const TGRGetCode = (data) => {
   return service({
     url: '/register/code',
     method: 'post',
@@ -16,7 +16,7 @@ export const getCode = (data) => {
 // @Produce  application/json
 // @Param data body {username:"string", password:"string", tgid:"string", code:"string", captcha:"string", captchaId:"string"}
 // @Router /register/register [post]
-export const URegister = (data) => {
+export const TGRRegister = (data) => {
   return service({
     url: '/register/register',
     method: 'post',
@@ -28,7 +28,7 @@ export const URegister = (data) => {
 // @Produce  application/json
 // @Param data body {tgid:"string", code:"string", password:"string", new_password:"string"}
 // @Router /register/register [post]
-export const UChangePassword = (data) => {
+export const TGRChangePassword = (data) => {
   return service({
     url: '/register/changePassword',
     method: 'post',
@@ -40,7 +40,7 @@ export const UChangePassword = (data) => {
 // @Produce  application/json
 // @Param data body {username:"string", password:"string", captcha:"string", captchaId:"string"}
 // @Router /register/login [post]
-export const ULogin = (data) => {
+export const TGRLogin = (data) => {
   return service({
     url: '/register/login',
     method: 'post',

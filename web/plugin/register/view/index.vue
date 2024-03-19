@@ -89,7 +89,7 @@
 
 <script setup>
 import { captcha } from "@/api/user";
-import { getCode } from "@/plugin/register/api/api";
+import { TGRGetCode } from "@/plugin/register/api/api";
 import { reactive, ref, watch } from "vue";
 import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
@@ -209,7 +209,7 @@ const submitForm = async () => {
 // TG验证码发送
 const sendTGCode = () => {
   const tg_id = registerFormData.tg_id;
-  getCode({ tg_id })
+  TGRGetCode({ tg_id })
     .then((response) => {
       ElMessage({
         type: "success",
