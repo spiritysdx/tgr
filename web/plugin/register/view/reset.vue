@@ -37,36 +37,36 @@
               </div>
             </div>
           </el-form-item>
-          <el-form-item prop="newPassword">
-            <el-input
-              v-model="resetFormData.newPassword"
-              :type="lock === 'lock' ? 'password' : 'text'"
-              placeholder="请输入新密码"
-            >
-              <template #suffix>
-                <span class="input-icon">
-                  <el-icon>
-                    <component :is="lock" @click="changeLock" />
-                  </el-icon>
-                </span>
-              </template>
-            </el-input>
-          </el-form-item>
-          <el-form-item prop="confirmPassword">
-            <el-input
-              v-model="resetFormData.confirmPassword"
-              :type="lock === 'lock' ? 'password' : 'text'"
-              placeholder="请再次输入新密码"
-            >
-              <template #suffix>
-                <span class="input-icon">
-                  <el-icon>
-                    <component :is="lock" @click="changeLock" />
-                  </el-icon>
-                </span>
-              </template>
-            </el-input>
-          </el-form-item>
+          <el-form-item prop="new_password">
+          <el-input
+            v-model="resetFormData.new_password"
+            :type="lock === 'lock' ? 'password' : 'text'"
+            placeholder="请输入新密码"
+          >
+            <template #suffix>
+              <span class="input-icon">
+                <el-icon>
+                  <component :is="lock" @click="changeLock" />
+                </el-icon>
+              </span>
+            </template>
+          </el-input>
+        </el-form-item>
+        <el-form-item prop="re_password">
+          <el-input
+            v-model="resetFormData.re_password"
+            :type="lock === 'lock' ? 'password' : 'text'"
+            placeholder="请再次输入新密码"
+          >
+            <template #suffix>
+              <span class="input-icon">
+                <el-icon>
+                  <component :is="lock" @click="changeLock" />
+                </el-icon>
+              </span>
+            </template>
+          </el-input>
+        </el-form-item>
           <el-form-item>
             <el-button type="primary" size="large" @click="submitForm"
               >确认重置</el-button
@@ -85,14 +85,14 @@ import { ElMessage } from "element-plus";
 
 const resetFormData = reactive({
   tg_id: "",
-  newPassword: "",
-  confirmPassword: "",
+  new_password: "",
+  re_password: "",
   code: "",
 });
 
 const lock = ref("lock");
 const confirmPasswordValidator = (rule, value, callback) => {
-  if (value !== resetFormData.newPassword) {
+  if (value !== resetFormData.re_password) {
     callback(new Error("两次输入的密码不一致"));
   } else {
     callback();
@@ -100,8 +100,8 @@ const confirmPasswordValidator = (rule, value, callback) => {
 };
 const resetFormRules = reactive({
   tg_id: [{ required: true, message: "请输入TG ID", trigger: "blur" }],
-  newPassword: [{ required: true, message: "请输入新密码", trigger: "blur" }],
-  confirmPassword: [
+  new_password: [{ required: true, message: "请输入新密码", trigger: "blur" }],
+  re_password: [
     { required: true, message: "请再次输入新密码", trigger: "blur" },
     { validator: confirmPasswordValidator, trigger: "blur" }
   ],
@@ -111,11 +111,12 @@ const resetFormRules = reactive({
 const changeLock = () => {
   lock.value = lock.value === "lock" ? "unlock" : "lock";
 };
+const resetPasswordFormRef = ref(null);
 const submitForm = () => {
-  const validationResult = $refs.resetPasswordForm.validate();
+  const validationResult = resetPasswordFormRef.value.validate();
   if (validationResult) {
     // Remove confirmPassword before sending data to backend
-    const { confirmPassword, ...requestData } = resetFormData;
+    const { re_password, ...requestData } = resetFormData;
     UChangePassword(requestData)
       .then(() => {
         ElMessage({
