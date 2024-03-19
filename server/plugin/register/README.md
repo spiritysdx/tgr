@@ -74,7 +74,7 @@ func InstallPlugin
 修改 ```web/src/pinia/modules/user.js``` 在 ```import```那块加上
 
 ```
-import { userRegister, ULogin } from '@/plugin/register/api/api'
+import { URegister, ULogin } from '@/plugin/register/api/api'
 ```
 
 在最后的return前后加上
