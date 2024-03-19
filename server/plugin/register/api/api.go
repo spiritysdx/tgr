@@ -91,7 +91,8 @@ func (p *RegisterApi) Login(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if res, err := service.ServiceGroupApp.Login(req); err != nil {
+	key := c.ClientIP()
+	if res, err := service.ServiceGroupApp.Login(req, key); err != nil {
 		global.GVA_LOG.Error("用户登录失败", zap.Error(err))
 		response.FailWithMessage(err.Error(), c)
 	} else {
