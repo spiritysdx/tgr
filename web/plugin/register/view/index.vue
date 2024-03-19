@@ -233,7 +233,7 @@ const goToResetPage = () => {
 // 监听注册类型的变化，切换表单数据
 watch(registerType, (newValue, oldValue) => {
   if (newValue === true && oldValue === false) {
-    registerFormData = currentFormData.value;
+    currentFormData.value = registerFormData;
   }
 });
 </script>
