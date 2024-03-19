@@ -82,7 +82,8 @@
 import { getCode, UChangePassword } from "@/plugin/register/api/api";
 import { reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
-
+import { useRouter } from "vue-router";
+const router = useRouter();
 const resetFormData = reactive({
   tg_id: "",
   new_password: "",
