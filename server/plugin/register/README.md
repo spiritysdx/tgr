@@ -197,7 +197,7 @@ const routes
 {
   path: '/resetpwd',
   name: 'Resetpwd',
-  component: () => import('@/plugin/register/view/resetpwd.vue')
+  component: () => import('@/plugin/register/view/reset.vue')
 },
 ```
 
