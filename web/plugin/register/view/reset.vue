@@ -79,7 +79,7 @@
 </template>
 
 <script setup>
-import { getCode, TGRChangePassword } from "@/plugin/register/api/api";
+import { TGRGetCode, TGRChangePassword } from "@/plugin/register/api/api";
 import { reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
@@ -148,7 +148,7 @@ const submitForm = () => {
 };
 const sendTGCode = () => {
   const tg_id = resetFormData.tg_id;
-  getCode({ tg_id })
+  TGRGetCode({ tg_id })
     .then(() => {
       ElMessage({
         type: "success",
