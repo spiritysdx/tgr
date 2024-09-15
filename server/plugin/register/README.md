@@ -12,7 +12,7 @@
 
 由于有TG验证码时限删除的需求，需要自行安装并启用Redis数据库
 
-在使用本插件时务必自行安装并配置gva的server目录下的```config.yaml```的
+在使用本插件时务必自行安装并配置gva的server目录下的```config.yaml```的(不推荐)
 
 ```
 redis:
@@ -21,7 +21,12 @@ redis:
     db: 0
 ```
 
-和
+```
+redis-List:
+    addr: 127.0.0.1:6379
+    password: ""
+    db: 0
+```
 
 ```
 system:
@@ -30,7 +35,7 @@ system:
     ....
 ```
 
-或
+**或(推荐)**
 
 使用管理员权限查看 系统工具 -- 系统配置 -- Redis admin数据库配置 进行配置。
 
